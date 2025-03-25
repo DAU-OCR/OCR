@@ -52,3 +52,56 @@ pip install -r requirements.txt
 
 # 3. 앱 실행
 streamlit run app.py
+```
+---
+
+## 📂 프로젝트 구조
+
+📁 project_root/
+│
+├─ app.py                # Streamlit 메인 앱
+├─ detector/             # YOLOv5 기반 번호판 탐지 모듈
+├─ ocr/                  # EasyOCR 기반 텍스트 추출 모듈
+├─ utils/                # 엑셀 저장, 이미지 정리, 보조 함수 등
+├─ examples/             # 테스트용 이미지 샘플
+└─ requirements.txt      # 설치 필요 패키지 목록
+
+---
+
+## 📈 기능 예시
+
+📸 사진 여러 장 업로드 → 가장 선명한 사진 1장 자동 선택
+
+🔍 차량 번호 자동 인식 → 두 개의 번호까지 추출
+
+📊 엑셀 다운로드 → 연번/사진/차량번호1/차량번호2 자동 정리
+
+⚙️ 하드웨어 상황에 따라 CPU/GPU 자동 전환
+
+---
+
+## 🙋 프로젝트 팀원
+
+김수윤
+김륜영
+이승민
+천영기
+서인범
+
+---
+
+## 🔍 참고 자료
+Easy Korean License Plate Detector
+
+AIHub 자동차 번호판 데이터셋
+
+EasyOCR GitHub
+
+YOLOv5 GitHub
+
+Streamlit Docs
+
+---
+
+## 📜 라이선스
+본 프로젝트는 MIT License 하에 배포됩니다.
