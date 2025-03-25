@@ -52,11 +52,24 @@ if uploaded_files:
 
     st.subheader("2️⃣ 차량번호 인식 중...")
 
+    test_license_numbers = [
+    "12가3456", "23나4567", "34다5678", "45라6789", "56마7890",
+    "67바8901", "78사9012", "89아0123", "90자1234", "01차2345"
+    ]
+
     # 1차 OCR 수행
     ocr_results = []
-    for filename, image in images:
-        text, confidence = run_ocr(image)
-        ocr_results.append({"filename": filename, "image": image, "text": text, "confidence": confidence})
+    for i, (filename, image) in enumerate(images):
+        # 테스트용 번호 지정
+        fake_number = test_license_numbers[i % len(test_license_numbers)]
+        confidence = 0.99  # 가짜 confidence 값 (원하는 대로 조절 가능)
+
+        ocr_results.append({
+            "filename": filename,
+            "image": image,
+            "text": fake_number,
+            "confidence": confidence
+        })
 
     # 가장 좋은 이미지 선택
     best_result = select_best_image(ocr_results)
