@@ -44,14 +44,14 @@
 
 ```bash
  1. 가상환경 생성 (선택)
-python -m venv venv
-source venv/Scripts/activate
+  python -m venv venv
+  source venv/Scripts/activate
 
  2. 필수 라이브러리 설치
-pip install -r requirements.txt
+  pip install -r requirements.txt
 
  3. 앱 실행
-streamlit run app.py
+  streamlit run app.py
 ```
 ---
 
