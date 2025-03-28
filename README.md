@@ -43,21 +43,21 @@
 ## 🚀 설치 및 실행 방법
 
 ```bash
-# 1. 가상환경 생성 (선택)
+ 1. 가상환경 생성 (선택)
 python -m venv venv
 source venv/Scripts/activate
 
-# 2. 필수 라이브러리 설치
+ 2. 필수 라이브러리 설치
 pip install -r requirements.txt
 
-# 3. 앱 실행
+ 3. 앱 실행
 streamlit run app.py
 ```
 ---
 
 ## 📂 프로젝트 구조
 
-  project_root/ ├── app.py # Streamlit 메인 앱 ├── detector/ # YOLOv5 기반 번호판 탐지 모듈 ├── ocr/ # EasyOCR 기반 텍스트 추출 모듈 ├── utils/ # 엑셀 저장, 이미지 정리, 보조 함수 등 ├── examples/ # 테스트용 이미지 샘플 └── requirements.txt # 설치 필요 패키지 목록
+ 추가필요
 
 ---
 
@@ -77,13 +77,13 @@ streamlit run app.py
 
     김수윤 팀장
 
-    김륜영
+    김륜영 팀원
 
-    이승민
+    이승민 팀원
 
-    천영기
+    천영기 팀원
 
-    서인범
+    서인범 팀원
 
 ---
 
