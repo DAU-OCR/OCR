@@ -4,6 +4,7 @@ from logic.image_filter import select_best_image
 from utils.excel_writer import save_to_excel
 from PIL import Image
 
+# 상단바 streamlit 설정에서 테마 Light로 변경 필요
 st.set_page_config(page_title="불법주차 OCR 처리기", layout="centered")
 
 st.markdown(
