@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints
+
+# Data & Model
+*.zip
+*.pth
+*.pt
+*.h5
+*.ckpt
+*.onnx
+data/
+checkpoints/
+logs/
+runs/
+
+# OS
+.DS_Store
+Thumbs.db
