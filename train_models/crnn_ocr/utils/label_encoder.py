@@ -2,7 +2,7 @@ class LabelEncoder:
     def __init__(self, charset=None):
         if charset is None:
             # 기본 한글 번호판용 문자 집합
-            self.charset = '가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허고노도로모보소오조초코토포호구누두루무부수우주추쿠투푸후0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            self.charset = '가강거경계고관광구금기김나남너노누다대더도동두등라러로루리마머명모무문미바버배뱌버보부북사산서소수아악안양어연영오용우울원육이인자작저전조주중지차천처초추충카커코쿠타터토투파평퍼포푸하허호홀후후히0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         else:
             self.charset = charset
 

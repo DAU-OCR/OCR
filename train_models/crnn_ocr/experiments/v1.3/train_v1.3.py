@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 from collections import Counter
 from torchvision import transforms
 from utils.dataset import OCRDataset
+from utils.dataset import OCRLabelOnlyDataset
 from utils.label_encoder import LabelEncoder
 from model.crnn import CRNN
 
@@ -35,6 +36,14 @@ def evaluate(model, val_loader, encoder):
                 correct += 1
     acc = correct / total * 100
     return acc
+
+def create_prefix_sampler(dataset, prefix_len=3):
+    label_list = [dataset[i] for i in range(len(dataset))]
+    prefix_list = [label[:prefix_len] for label in label_list]
+    freq = Counter(prefix_list)
+    weights = [1.0 / freq[label[:prefix_len]] for label in label_list]
+    sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
+    return sampler
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -67,20 +76,22 @@ if __name__ == "__main__":
     train_dataset = OCRDataset(
         image_dir='data/images/train',
         label_dir='data/labels/train',
-        transform=transform
+        transform=transform,
     )
 
     val_dataset = OCRDataset(
         image_dir='data/images/val',
         label_dir='data/labels/val',
-        transform=transform
+        transform=transform,
+    )
+
+    # label only dataset (no transform)
+    label_dataset = OCRLabelOnlyDataset(
+        label_dir='data/labels/train',
     )
     
     # WeightedSampler 적용
-    label_list = [train_dataset[i][1] for i in range(len(train_dataset))]
-    label_freq = Counter(label_list)
-    weights = [1.0 / label_freq[label] for label in label_list]
-    sampler = WeightedRandomSampler(weights, num_samples=len(weights), replacement=True)
+    sampler = create_prefix_sampler(label_dataset, prefix_len=3)
 
     train_loader = DataLoader(
         train_dataset,
@@ -98,7 +109,12 @@ if __name__ == "__main__":
     model = CRNN(num_classes=num_classes, hidden_size=config.hidden_size).to(device)
     criterion = nn.CTCLoss(blank=0, zero_infinity=True)
     optimizer = optim.Adam(model.parameters(), lr=config.lr)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
+
+    # warm-up을 위한 LambdaLR 스케줄러 적용
+    def lr_lambda(epoch):
+        return min(1.0, (epoch + 1) / 5)
+
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 
     best_acc = 0.0
@@ -128,7 +144,7 @@ if __name__ == "__main__":
 
                 running_loss += loss.item()
             
-            scheduler.step(running_loss)
+            scheduler.step()
 
             if not os.path.exists('checkpoints'):
                 os.makedirs('checkpoints')

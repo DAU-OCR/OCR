@@ -30,3 +30,20 @@ class OCRDataset(Dataset):
             label = f.read().strip()
 
         return image, label
+
+class OCRLabelOnlyDataset(Dataset):
+    def __init__(self, label_dir):
+        self.label_dir = label_dir
+        self.label_names = sorted([
+            fname for fname in os.listdir(label_dir)
+            if fname.endswith('.txt')
+        ])
+
+    def __len__(self):
+        return len(self.label_names)
+
+    def __getitem__(self, idx):
+        label_path = os.path.join(self.label_dir, self.label_names[idx])
+        with open(label_path, 'r', encoding='utf-8') as f:
+            label = f.read().strip()
+        return label
