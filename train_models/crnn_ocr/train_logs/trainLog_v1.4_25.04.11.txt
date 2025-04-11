@@ -1,0 +1,1335 @@
+
+(crnn_ocr) G:\Projects\crnn_ocr>python train_v1.4.py
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: ygchun123 (ygchun123-) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.19.9
+wandb: Run data is saved locally in wandb_logs\wandb\run-20250411_032851-bffqf8t5
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run train_v1.4
+wandb:  View project at https://wandb.ai/ygchun123-/crnn-ocr
+wandb:  View run at https://wandb.ai/ygchun123-/crnn-ocr/runs/bffqf8t5
+[Epoch 1] Train Loss: 3.2706 | Val Loss: 3.3614 | Val Acc: 0.0000% | Char Acc (평균): 2.8571%
+✅ 모델 저장됨: checkpoints/crnn_epoch_1.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 03오3711
+  └ Pred (표준 CTC): 3 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 3
+[샘플] GT: 03보6364
+  └ Pred (표준 CTC): 1 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 1
+[샘플] GT: 인천94바6098
+  └ Pred (표준 CTC): 3 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 3
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 2] Train Loss: 2.4165 | Val Loss: 1.7847 | Val Acc: 1.1200% | Char Acc (평균): 31.4286%
+✅ 모델 저장됨: checkpoints/crnn_epoch_2.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 서울75사1954
+  └ Pred (표준 CTC): 311933 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 311933
+[샘플] GT: 41가7968
+  └ Pred (표준 CTC): 411가796 | Char Acc: 28.5700%
+  └ Pred (Beam Search): 411가796
+[샘플] GT: 30너4034
+  └ Pred (표준 CTC): 58너4044 | Char Acc: 57.1400%
+  └ Pred (Beam Search): 58너4044
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 3] Train Loss: 0.4501 | Val Loss: 0.5167 | Val Acc: 51.7100% | Char Acc (평균): 66.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_3.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 82수3380
+  └ Pred (표준 CTC): 82수3380 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 82수3380
+[샘플] GT: 89고7961
+  └ Pred (표준 CTC): 89고7961 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 89고7961
+[샘플] GT: 95고0826
+  └ Pred (표준 CTC): 95고0826 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 95고0826
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 4] Train Loss: 0.1717 | Val Loss: 0.4449 | Val Acc: 60.1800% | Char Acc (평균): 52.1111%
+✅ 모델 저장됨: checkpoints/crnn_epoch_4.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바4939
+  └ Pred (표준 CTC): 337바4939 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 337바4939
+[샘플] GT: 37부5040
+  └ Pred (표준 CTC): 37부5040 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 37부5040
+[샘플] GT: 51주6273
+  └ Pred (표준 CTC): 51주6273 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 51주6273
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 5] Train Loss: 0.1254 | Val Loss: 0.3154 | Val Acc: 64.9600% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_5.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 128허9560
+  └ Pred (표준 CTC): 128허9560 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 128허9560
+[샘플] GT: 26누1202
+  └ Pred (표준 CTC): 26누1202 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 26누1202
+[샘플] GT: 62두6854
+  └ Pred (표준 CTC): 62두6854 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 62두6854
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 6] Train Loss: 0.1057 | Val Loss: 0.2890 | Val Acc: 68.8100% | Char Acc (평균): 78.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_6.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 292서5031
+  └ Pred (표준 CTC): 292서5031 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 292서5031
+[샘플] GT: 경기92바6611
+  └ Pred (표준 CTC): 경기92바6611 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기92바6611
+[샘플] GT: 39로9088
+  └ Pred (표준 CTC): 39모9088 | Char Acc: 85.7100%
+  └ Pred (Beam Search): 39모9088
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 7] Train Loss: 0.0888 | Val Loss: 0.2213 | Val Acc: 76.1600% | Char Acc (평균): 81.1111%
+✅ 모델 저장됨: checkpoints/crnn_epoch_7.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 59주4632
+  └ Pred (표준 CTC): 59주4632 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 59주4632
+[샘플] GT: 295소2485
+  └ Pred (표준 CTC): 295소2485 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 295소2485
+[샘플] GT: 06허0810
+  └ Pred (표준 CTC): 06허0810 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 06허0810
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 8] Train Loss: 0.0767 | Val Loss: 0.1971 | Val Acc: 76.2500% | Char Acc (평균): 88.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_8.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기71아1437
+  └ Pred (표준 CTC): 경기93아1437 | Char Acc: 77.7800%
+  └ Pred (Beam Search): 경기93아1437
+[샘플] GT: 경기37바5016
+  └ Pred (표준 CTC): 경기37바5016 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5016
+[샘플] GT: 경기37바4808
+  └ Pred (표준 CTC): 경기37바4808 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4808
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 9] Train Loss: 0.0709 | Val Loss: 0.1823 | Val Acc: 79.2100% | Char Acc (평균): 98.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_9.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 96오7770
+  └ Pred (표준 CTC): 96오7770 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 96오7770
+[샘플] GT: 86두6157
+  └ Pred (표준 CTC): 86두6157 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 86두6157
+[샘플] GT: 84누2590
+  └ Pred (표준 CTC): 84누2590 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 84누2590
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 10] Train Loss: 0.0623 | Val Loss: 0.1565 | Val Acc: 83.0200% | Char Acc (평균): 80.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_10.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 52거5579
+  └ Pred (표준 CTC): 52거5579 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 52거5579
+[샘플] GT: 124더4948
+  └ Pred (표준 CTC): 124더4948 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 124더4948
+[샘플] GT: 경기71아1100
+  └ Pred (표준 CTC): 충북91아1100 | Char Acc: 66.6700%
+  └ Pred (Beam Search): 충북91아1100
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 11] Train Loss: 0.0541 | Val Loss: 0.1816 | Val Acc: 77.2300% | Char Acc (평균): 90.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_11.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 27서7842
+  └ Pred (표준 CTC): 27서7842 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 27서7842
+[샘플] GT: 60더0463
+  └ Pred (표준 CTC): 60더0463 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 60더0463
+[샘플] GT: 29소6484
+  └ Pred (표준 CTC): 29소6484 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 29소6484
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 12] Train Loss: 0.0475 | Val Loss: 0.1544 | Val Acc: 82.6700% | Char Acc (평균): 98.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_12.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 23로3874
+  └ Pred (표준 CTC): 23로3874 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 23로3874
+[샘플] GT: 인천30바7782
+  └ Pred (표준 CTC): 인천30바7782 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 인천30바7782
+[샘플] GT: 73수5014
+  └ Pred (표준 CTC): 73수5014 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 73수5014
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 13] Train Loss: 0.0424 | Val Loss: 0.1273 | Val Acc: 84.3700% | Char Acc (평균): 88.3929%
+✅ 모델 저장됨: checkpoints/crnn_epoch_13.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 308소4082
+  └ Pred (표준 CTC): 308소4082 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 308소4082
+[샘플] GT: 21라0301
+  └ Pred (표준 CTC): 21라0301 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 21라0301
+[샘플] GT: 83다7267
+  └ Pred (표준 CTC): 83다7267 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 83다7267
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 14] Train Loss: 0.0384 | Val Loss: 0.1284 | Val Acc: 85.2200% | Char Acc (평균): 88.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_14.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 84부0563
+  └ Pred (표준 CTC): 84부0563 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 84부0563
+[샘플] GT: 경기98바9283
+  └ Pred (표준 CTC): 경천98바9283 | Char Acc: 88.8900%
+  └ Pred (Beam Search): 경천98바9283
+[샘플] GT: 경기37바5032
+  └ Pred (표준 CTC): 경기37바5032 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5032
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 15] Train Loss: 0.0355 | Val Loss: 0.1354 | Val Acc: 85.7000% | Char Acc (평균): 91.1111%
+✅ 모델 저장됨: checkpoints/crnn_epoch_15.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 07저3408
+  └ Pred (표준 CTC): 07저3408 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 07저3408
+[샘플] GT: 인천71바6165
+  └ Pred (표준 CTC): 70바6165 | Char Acc: 11.1100%
+  └ Pred (Beam Search): 70바6165
+[샘플] GT: 47주6517
+  └ Pred (표준 CTC): 47주6517 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 47주6517
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 16] Train Loss: 0.0330 | Val Loss: 0.1248 | Val Acc: 86.5000% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_16.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 94거0923
+  └ Pred (표준 CTC): 94거0923 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 94거0923
+[샘플] GT: 73수3882
+  └ Pred (표준 CTC): 73수3882 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 73수3882
+[샘플] GT: 11무0693
+  └ Pred (표준 CTC): 11무0693 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 11무0693
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 17] Train Loss: 0.0311 | Val Loss: 0.1234 | Val Acc: 87.3600% | Char Acc (평균): 86.3492%
+✅ 모델 저장됨: checkpoints/crnn_epoch_17.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 23우2212
+  └ Pred (표준 CTC): 23우2212 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 23우2212
+[샘플] GT: 71더2160
+  └ Pred (표준 CTC): 71더2160 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 71더2160
+[샘플] GT: 인천84바4262
+  └ Pred (표준 CTC): 인천84바4262 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 인천84바4262
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 18] Train Loss: 0.0301 | Val Loss: 0.1289 | Val Acc: 86.8300% | Char Acc (평균): 88.7500%
+✅ 모델 저장됨: checkpoints/crnn_epoch_18.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 22도1831
+  └ Pred (표준 CTC): 22도1831 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22도1831
+[샘플] GT: 170하1360
+  └ Pred (표준 CTC): 170허1360 | Char Acc: 87.5000%
+  └ Pred (Beam Search): 170허1360
+[샘플] GT: 서울31사5261
+  └ Pred (표준 CTC): 831사5261 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 831사5261
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 19] Train Loss: 0.0278 | Val Loss: 0.1226 | Val Acc: 87.4200% | Char Acc (평균): 92.8770%
+✅ 모델 저장됨: checkpoints/crnn_epoch_19.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 90부1570
+  └ Pred (표준 CTC): 90부1570 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 90부1570
+[샘플] GT: 88나0507
+  └ Pred (표준 CTC): 80나0507 | Char Acc: 85.7100%
+  └ Pred (Beam Search): 80나0507
+[샘플] GT: 경기71아1530
+  └ Pred (표준 CTC): 경기71아1530 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1530
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 20] Train Loss: 0.0257 | Val Loss: 0.1052 | Val Acc: 88.1300% | Char Acc (평균): 96.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_20.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 18더0130
+  └ Pred (표준 CTC): 18더0130 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 18더0130
+[샘플] GT: 36거0954
+  └ Pred (표준 CTC): 36거0954 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 36거0954
+[샘플] GT: 19소9501
+  └ Pred (표준 CTC): 19소9501 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 19소9501
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 21] Train Loss: 0.0240 | Val Loss: 0.1218 | Val Acc: 86.9300% | Char Acc (평균): 98.7500%
+✅ 모델 저장됨: checkpoints/crnn_epoch_21.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 126주1020
+  └ Pred (표준 CTC): 126우1020 | Char Acc: 87.5000%
+  └ Pred (Beam Search): 126우1020
+[샘플] GT: 경기37바6131
+  └ Pred (표준 CTC): 경기37바6131 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6131
+[샘플] GT: 14보2664
+  └ Pred (표준 CTC): 14보2664 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 14보2664
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 22] Train Loss: 0.0244 | Val Loss: 0.1136 | Val Acc: 88.2500% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_22.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 301주3327
+  └ Pred (표준 CTC): 301주3327 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 301주3327
+[샘플] GT: 46우6895
+  └ Pred (표준 CTC): 46우6895 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 46우6895
+[샘플] GT: 01버0626
+  └ Pred (표준 CTC): 01버0626 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 01버0626
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 23] Train Loss: 0.0244 | Val Loss: 0.1056 | Val Acc: 89.4400% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_23.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바4688
+  └ Pred (표준 CTC): 경기37바4688 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4688
+[샘플] GT: 108가4135
+  └ Pred (표준 CTC): 108가4135 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 108가4135
+[샘플] GT: 59주9047
+  └ Pred (표준 CTC): 59주9047 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 59주9047
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 24] Train Loss: 0.0213 | Val Loss: 0.1355 | Val Acc: 86.3900% | Char Acc (평균): 87.7778%
+✅ 모델 저장됨: checkpoints/crnn_epoch_24.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 67두0618
+  └ Pred (표준 CTC): 67두0618 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 67두0618
+[샘플] GT: 61거1238
+  └ Pred (표준 CTC): 61거1238 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 61거1238
+[샘플] GT: 경기71아3648
+  └ Pred (표준 CTC): 경기91아3648 | Char Acc: 88.8900%
+  └ Pred (Beam Search): 경기91아3648
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 25] Train Loss: 0.0212 | Val Loss: 0.1238 | Val Acc: 84.3000% | Char Acc (평균): 89.3651%
+✅ 모델 저장됨: checkpoints/crnn_epoch_25.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 경기37바6328
+  └ Pred (표준 CTC): 경기7바6328 | Char Acc: 22.2200%
+  └ Pred (Beam Search): 경기7바6328
+[샘플] GT: 75어2938
+  └ Pred (표준 CTC): 75어2938 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 75어2938
+[샘플] GT: 경기37바5636
+  └ Pred (표준 CTC): 경기37바5636 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5636
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 26] Train Loss: 0.0199 | Val Loss: 0.1135 | Val Acc: 87.5300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_26.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 경기37바4158
+  └ Pred (표준 CTC): 경기37바4158 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4158
+[샘플] GT: 328우5318
+  └ Pred (표준 CTC): 328우5318 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 328우5318
+[샘플] GT: 308조3410
+  └ Pred (표준 CTC): 308조3410 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 308조3410
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 27] Train Loss: 0.0201 | Val Loss: 0.1081 | Val Acc: 89.1700% | Char Acc (평균): 98.7500%
+✅ 모델 저장됨: checkpoints/crnn_epoch_27.pth
+⏳ 향상되지 않음 (counter: 4/20)
+[샘플] GT: 경기37바4427
+  └ Pred (표준 CTC): 경기37바4427 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4427
+[샘플] GT: 22머6666
+  └ Pred (표준 CTC): 22머6666 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22머6666
+[샘플] GT: 88우0986
+  └ Pred (표준 CTC): 88우0986 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 88우0986
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 28] Train Loss: 0.0183 | Val Loss: 0.1187 | Val Acc: 88.1400% | Char Acc (평균): 84.7619%
+✅ 모델 저장됨: checkpoints/crnn_epoch_28.pth
+⏳ 향상되지 않음 (counter: 5/20)
+[샘플] GT: 70버5199
+  └ Pred (표준 CTC): 70버5199 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 70버5199
+[샘플] GT: 경기37바6284
+  └ Pred (표준 CTC): 경기37바6284 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6284
+[샘플] GT: 경기37바2148
+  └ Pred (표준 CTC): 인천37바2148 | Char Acc: 77.7800%
+  └ Pred (Beam Search): 인천37바2148
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 29] Train Loss: 0.0187 | Val Loss: 0.1090 | Val Acc: 89.2500% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_29.pth
+⏳ 향상되지 않음 (counter: 6/20)
+[샘플] GT: 21조3116
+  └ Pred (표준 CTC): 21조3116 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 21조3116
+[샘플] GT: 경기37바4553
+  └ Pred (표준 CTC): 경기37바4553 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4553
+[샘플] GT: 83너9289
+  └ Pred (표준 CTC): 83너9289 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 83너9289
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 30] Train Loss: 0.0178 | Val Loss: 0.1083 | Val Acc: 89.0700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_30.pth
+⏳ 향상되지 않음 (counter: 7/20)
+[샘플] GT: 경기37바1725
+  └ Pred (표준 CTC): 경기37바1725 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바1725
+[샘플] GT: 04주8790
+  └ Pred (표준 CTC): 04주8790 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 04주8790
+[샘플] GT: 19수9635
+  └ Pred (표준 CTC): 19수9635 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 19수9635
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 31] Train Loss: 0.0177 | Val Loss: 0.0958 | Val Acc: 90.5300% | Char Acc (평균): 98.8889%
+✅ 모델 저장됨: checkpoints/crnn_epoch_31.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 61조4995
+  └ Pred (표준 CTC): 61조4995 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 61조4995
+[샘플] GT: 10거8997
+  └ Pred (표준 CTC): 10거8997 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 10거8997
+[샘플] GT: 389우1237
+  └ Pred (표준 CTC): 389우1237 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 389우1237
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 32] Train Loss: 0.0167 | Val Loss: 0.1171 | Val Acc: 87.3700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_32.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 24로6482
+  └ Pred (표준 CTC): 24로6482 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 24로6482
+[샘플] GT: 175저8655
+  └ Pred (표준 CTC): 175저8655 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 175저8655
+[샘플] GT: 36거0954
+  └ Pred (표준 CTC): 36거0954 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 36거0954
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 33] Train Loss: 0.0173 | Val Loss: 0.0909 | Val Acc: 90.4400% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_33.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 52고9355
+  └ Pred (표준 CTC): 52고9355 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 52고9355
+[샘플] GT: 경기37바5603
+  └ Pred (표준 CTC): 경기37바5603 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5603
+[샘플] GT: 30너1131
+  └ Pred (표준 CTC): 30너1131 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 30너1131
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 34] Train Loss: 0.0142 | Val Loss: 0.1026 | Val Acc: 90.5600% | Char Acc (평균): 98.8889%
+✅ 모델 저장됨: checkpoints/crnn_epoch_34.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 348저4387
+  └ Pred (표준 CTC): 348저4387 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 348저4387
+[샘플] GT: 141구7284
+  └ Pred (표준 CTC): 141구7284 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 141구7284
+[샘플] GT: 21머2654
+  └ Pred (표준 CTC): 21머2654 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 21머2654
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 35] Train Loss: 0.0151 | Val Loss: 0.1086 | Val Acc: 88.9800% | Char Acc (평균): 94.4444%
+✅ 모델 저장됨: checkpoints/crnn_epoch_35.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 336머9660
+  └ Pred (표준 CTC): 336머9660 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 336머9660
+[샘플] GT: 경기71자8658
+  └ Pred (표준 CTC): 서울85사8658 | Char Acc: 44.4400%
+  └ Pred (Beam Search): 서울85사8658
+[샘플] GT: 22로8116
+  └ Pred (표준 CTC): 22로8116 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22로8116
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 36] Train Loss: 0.0147 | Val Loss: 0.0993 | Val Acc: 90.7300% | Char Acc (평균): 86.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_36.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 81러4695
+  └ Pred (표준 CTC): 81러4695 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 81러4695
+[샘플] GT: 88도7785
+  └ Pred (표준 CTC): 88도7785 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 88도7785
+[샘플] GT: 경기37바5092
+  └ Pred (표준 CTC): 837바5092 | Char Acc: 0.0000%
+  └ Pred (Beam Search): 837바5092
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 37] Train Loss: 0.0139 | Val Loss: 0.1149 | Val Acc: 87.1300% | Char Acc (평균): 91.1111%
+✅ 모델 저장됨: checkpoints/crnn_epoch_37.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 88라8474
+  └ Pred (표준 CTC): 88라8474 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 88라8474
+[샘플] GT: 경기37바5981
+  └ Pred (표준 CTC): 경기7바5981 | Char Acc: 22.2200%
+  └ Pred (Beam Search): 경기7바5981
+[샘플] GT: 경기71아3686
+  └ Pred (표준 CTC): 경기71아3686 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아3686
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 38] Train Loss: 0.0129 | Val Loss: 0.1129 | Val Acc: 89.4300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_38.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 경기37바5762
+  └ Pred (표준 CTC): 경기37바5762 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5762
+[샘플] GT: 53구0425
+  └ Pred (표준 CTC): 53구0425 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 53구0425
+[샘플] GT: 85모6698
+  └ Pred (표준 CTC): 85모6698 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 85모6698
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 39] Train Loss: 0.0131 | Val Loss: 0.1083 | Val Acc: 88.6300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_39.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 08호6004
+  └ Pred (표준 CTC): 08호6004 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 08호6004
+[샘플] GT: 23두9176
+  └ Pred (표준 CTC): 23두9176 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 23두9176
+[샘플] GT: 02어4678
+  └ Pred (표준 CTC): 02어4678 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 02어4678
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 40] Train Loss: 0.0135 | Val Loss: 0.0929 | Val Acc: 91.0800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_40.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기71아8192
+  └ Pred (표준 CTC): 경기71아8192 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아8192
+[샘플] GT: 02우6098
+  └ Pred (표준 CTC): 02우6098 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 02우6098
+[샘플] GT: 35보2826
+  └ Pred (표준 CTC): 35보2826 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 35보2826
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 41] Train Loss: 0.0123 | Val Loss: 0.1173 | Val Acc: 85.0800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_41.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 경기37바5276
+  └ Pred (표준 CTC): 경기37바5276 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5276
+[샘플] GT: 52누5976
+  └ Pred (표준 CTC): 52누5976 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 52누5976
+[샘플] GT: 59오5877
+  └ Pred (표준 CTC): 59오5877 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 59오5877
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 42] Train Loss: 0.0118 | Val Loss: 0.1080 | Val Acc: 89.3000% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_42.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 66도9753
+  └ Pred (표준 CTC): 66도9753 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 66도9753
+[샘플] GT: 50마8631
+  └ Pred (표준 CTC): 50마8631 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 50마8631
+[샘플] GT: 56고2424
+  └ Pred (표준 CTC): 56고2424 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 56고2424
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 43] Train Loss: 0.0116 | Val Loss: 0.1103 | Val Acc: 89.2100% | Char Acc (평균): 92.2222%
+✅ 모델 저장됨: checkpoints/crnn_epoch_43.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 91다5873
+  └ Pred (표준 CTC): 91다5873 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 91다5873
+[샘플] GT: 74오8852
+  └ Pred (표준 CTC): 74오8852 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 74오8852
+[샘플] GT: 경기71아1625
+  └ Pred (표준 CTC): 경기71아1625 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1625
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 44] Train Loss: 0.0109 | Val Loss: 0.0950 | Val Acc: 90.9700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_44.pth
+⏳ 향상되지 않음 (counter: 4/20)
+[샘플] GT: 경기37바6072
+  └ Pred (표준 CTC): 경기37바6072 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6072
+[샘플] GT: 158소2621
+  └ Pred (표준 CTC): 158소2621 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 158소2621
+[샘플] GT: 07도2132
+  └ Pred (표준 CTC): 07도2132 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 07도2132
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 45] Train Loss: 0.0102 | Val Loss: 0.1017 | Val Acc: 90.0700% | Char Acc (평균): 93.3333%
+✅ 모델 저장됨: checkpoints/crnn_epoch_45.pth
+⏳ 향상되지 않음 (counter: 5/20)
+[샘플] GT: 경기37바5587
+  └ Pred (표준 CTC): 경기37바5587 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5587
+[샘플] GT: 82라3794
+  └ Pred (표준 CTC): 82라3794 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 82라3794
+[샘플] GT: 150호1678
+  └ Pred (표준 CTC): 150호1678 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 150호1678
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 46] Train Loss: 0.0100 | Val Loss: 0.1028 | Val Acc: 89.3500% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_46.pth
+⏳ 향상되지 않음 (counter: 6/20)
+[샘플] GT: 경기37바4357
+  └ Pred (표준 CTC): 경기37바4357 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4357
+[샘플] GT: 83루9796
+  └ Pred (표준 CTC): 83루9796 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 83루9796
+[샘플] GT: 323두8690
+  └ Pred (표준 CTC): 323두8690 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 323두8690
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 47] Train Loss: 0.0093 | Val Loss: 0.0909 | Val Acc: 91.4900% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_47.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 31부2967
+  └ Pred (표준 CTC): 31부2967 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 31부2967
+[샘플] GT: 09소7809
+  └ Pred (표준 CTC): 09소7809 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 09소7809
+[샘플] GT: 07가3018
+  └ Pred (표준 CTC): 07가3018 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 07가3018
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 48] Train Loss: 0.0093 | Val Loss: 0.0940 | Val Acc: 90.8700% | Char Acc (평균): 96.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_48.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 경기37바5566
+  └ Pred (표준 CTC): 경기37바5566 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5566
+[샘플] GT: 경기71아1151
+  └ Pred (표준 CTC): 경북78아1151 | Char Acc: 77.7800%
+  └ Pred (Beam Search): 경북78아1151
+[샘플] GT: 84고6381
+  └ Pred (표준 CTC): 84고6381 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 84고6381
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 49] Train Loss: 0.0091 | Val Loss: 0.0996 | Val Acc: 88.7500% | Char Acc (평균): 95.5556%
+✅ 모델 저장됨: checkpoints/crnn_epoch_49.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 115고6553
+  └ Pred (표준 CTC): 115고6553 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 115고6553
+[샘플] GT: 32누5379
+  └ Pred (표준 CTC): 32누5379 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 32누5379
+[샘플] GT: 경기37바5965
+  └ Pred (표준 CTC): 경기27바5965 | Char Acc: 88.8900%
+  └ Pred (Beam Search): 경기27바5965
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 50] Train Loss: 0.0079 | Val Loss: 0.0966 | Val Acc: 90.3100% | Char Acc (평균): 97.7778%
+✅ 모델 저장됨: checkpoints/crnn_epoch_50.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 53무8391
+  └ Pred (표준 CTC): 53무8391 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 53무8391
+[샘플] GT: 경기71아8116
+  └ Pred (표준 CTC): 경기71아8116 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아8116
+[샘플] GT: 22노1304
+  └ Pred (표준 CTC): 22노1304 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22노1304
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 51] Train Loss: 0.0076 | Val Loss: 0.0866 | Val Acc: 91.6500% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_51.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 70부3866
+  └ Pred (표준 CTC): 70부3866 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 70부3866
+[샘플] GT: 80어8815
+  └ Pred (표준 CTC): 80어8815 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 80어8815
+[샘플] GT: 83더3540
+  └ Pred (표준 CTC): 83더3540 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 83더3540
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 52] Train Loss: 0.0076 | Val Loss: 0.0863 | Val Acc: 92.4700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_52.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 22러3964
+  └ Pred (표준 CTC): 22러3964 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22러3964
+[샘플] GT: 경기37바6767
+  └ Pred (표준 CTC): 경기37바6767 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6767
+[샘플] GT: 34호5642
+  └ Pred (표준 CTC): 34호5642 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 34호5642
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 53] Train Loss: 0.0070 | Val Loss: 0.0876 | Val Acc: 91.3600% | Char Acc (평균): 95.2381%
+✅ 모델 저장됨: checkpoints/crnn_epoch_53.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 55오7756
+  └ Pred (표준 CTC): 55무7756 | Char Acc: 85.7100%
+  └ Pred (Beam Search): 55무7756
+[샘플] GT: 02나5038
+  └ Pred (표준 CTC): 02나5038 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 02나5038
+[샘플] GT: 182마2548
+  └ Pred (표준 CTC): 182마2548 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 182마2548
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 54] Train Loss: 0.0073 | Val Loss: 0.0951 | Val Acc: 91.4200% | Char Acc (평균): 95.5556%
+✅ 모델 저장됨: checkpoints/crnn_epoch_54.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 159호3227
+  └ Pred (표준 CTC): 159호3227 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 159호3227
+[샘플] GT: 86노8895
+  └ Pred (표준 CTC): 86노8895 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 86노8895
+[샘플] GT: 34보0305
+  └ Pred (표준 CTC): 34보0305 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 34보0305
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 55] Train Loss: 0.0063 | Val Loss: 0.0936 | Val Acc: 90.3500% | Char Acc (평균): 91.1111%
+✅ 모델 저장됨: checkpoints/crnn_epoch_55.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 29로7524
+  └ Pred (표준 CTC): 29로7524 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 29로7524
+[샘플] GT: 서울80바8218
+  └ Pred (표준 CTC): 서울80바8218 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 서울80바8218
+[샘플] GT: 76보3471
+  └ Pred (표준 CTC): 76보3471 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 76보3471
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 56] Train Loss: 0.0059 | Val Loss: 0.0878 | Val Acc: 91.5900% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_56.pth
+⏳ 향상되지 않음 (counter: 4/20)
+[샘플] GT: 경기37바2000
+  └ Pred (표준 CTC): 경기37바2000 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바2000
+[샘플] GT: 24보4634
+  └ Pred (표준 CTC): 24보4634 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 24보4634
+[샘플] GT: 97노8967
+  └ Pred (표준 CTC): 97노8967 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 97노8967
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 57] Train Loss: 0.0062 | Val Loss: 0.0876 | Val Acc: 91.7400% | Char Acc (평균): 98.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_57.pth
+⏳ 향상되지 않음 (counter: 5/20)
+[샘플] GT: 93도5685
+  └ Pred (표준 CTC): 93도568 | Char Acc: 85.7100%
+  └ Pred (Beam Search): 93도568
+[샘플] GT: 53조3071
+  └ Pred (표준 CTC): 53조3071 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 53조3071
+[샘플] GT: 81소3499
+  └ Pred (표준 CTC): 81소3499 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 81소3499
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 58] Train Loss: 0.0053 | Val Loss: 0.0946 | Val Acc: 91.6100% | Char Acc (평균): 98.8889%
+✅ 모델 저장됨: checkpoints/crnn_epoch_58.pth
+⏳ 향상되지 않음 (counter: 6/20)
+[샘플] GT: 28수5376
+  └ Pred (표준 CTC): 28수5376 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 28수5376
+[샘플] GT: 73수5014
+  └ Pred (표준 CTC): 73수5014 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 73수5014
+[샘플] GT: 55무7471
+  └ Pred (표준 CTC): 55무7471 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 55무7471
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 59] Train Loss: 0.0050 | Val Loss: 0.0899 | Val Acc: 92.4700% | Char Acc (평균): 98.5714%
+✅ 모델 저장됨: checkpoints/crnn_epoch_59.pth
+⏳ 향상되지 않음 (counter: 7/20)
+[샘플] GT: 인천31바3446
+  └ Pred (표준 CTC): 인천31바3446 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 인천31바3446
+[샘플] GT: 15조7802
+  └ Pred (표준 CTC): 15조7802 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 15조7802
+[샘플] GT: 경기37바5176
+  └ Pred (표준 CTC): 경기37바5176 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5176
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 60] Train Loss: 0.0047 | Val Loss: 0.0873 | Val Acc: 92.7900% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_60.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바4880
+  └ Pred (표준 CTC): 경기37바4880 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4880
+[샘플] GT: 66로7037
+  └ Pred (표준 CTC): 66로7037 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 66로7037
+[샘플] GT: 36노9017
+  └ Pred (표준 CTC): 36노9017 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 36노9017
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 61] Train Loss: 0.0048 | Val Loss: 0.0838 | Val Acc: 92.3700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_61.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 경기37바5055
+  └ Pred (표준 CTC): 경기37바5055 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5055
+[샘플] GT: 84조9174
+  └ Pred (표준 CTC): 84조9174 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 84조9174
+[샘플] GT: 62루1748
+  └ Pred (표준 CTC): 62루1748 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 62루1748
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 62] Train Loss: 0.0042 | Val Loss: 0.0883 | Val Acc: 92.2600% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_62.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 19우5487
+  └ Pred (표준 CTC): 19우5487 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 19우5487
+[샘플] GT: 79구5399
+  └ Pred (표준 CTC): 79구5399 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 79구5399
+[샘플] GT: 경기71자8417
+  └ Pred (표준 CTC): 경기71자8417 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71자8417
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 63] Train Loss: 0.0047 | Val Loss: 0.0837 | Val Acc: 92.7800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_63.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 경기37바1363
+  └ Pred (표준 CTC): 경기37바1363 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바1363
+[샘플] GT: 91라6038
+  └ Pred (표준 CTC): 91라6038 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 91라6038
+[샘플] GT: 52무2515
+  └ Pred (표준 CTC): 52무2515 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 52무2515
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 64] Train Loss: 0.0042 | Val Loss: 0.0853 | Val Acc: 92.4300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_64.pth
+⏳ 향상되지 않음 (counter: 4/20)
+[샘플] GT: 경기37바5293
+  └ Pred (표준 CTC): 경기37바5293 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5293
+[샘플] GT: 89부1472
+  └ Pred (표준 CTC): 89부1472 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 89부1472
+[샘플] GT: 63누0237
+  └ Pred (표준 CTC): 63누0237 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 63누0237
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 65] Train Loss: 0.0038 | Val Loss: 0.0817 | Val Acc: 92.3300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_65.pth
+⏳ 향상되지 않음 (counter: 5/20)
+[샘플] GT: 96두6641
+  └ Pred (표준 CTC): 96두6641 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 96두6641
+[샘플] GT: 84두8744
+  └ Pred (표준 CTC): 84두8744 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 84두8744
+[샘플] GT: 경기37바4939
+  └ Pred (표준 CTC): 경기37바4939 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4939
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 66] Train Loss: 0.0039 | Val Loss: 0.0846 | Val Acc: 93.0100% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_66.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 61무5075
+  └ Pred (표준 CTC): 61무5075 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 61무5075
+[샘플] GT: 13우4745
+  └ Pred (표준 CTC): 13우4745 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 13우4745
+[샘플] GT: 경기37바6788
+  └ Pred (표준 CTC): 경기37바6788 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6788
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 67] Train Loss: 0.0031 | Val Loss: 0.0843 | Val Acc: 93.0900% | Char Acc (평균): 96.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_67.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 22무4229
+  └ Pred (표준 CTC): 22무4229 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 22무4229
+[샘플] GT: 169주9960
+  └ Pred (표준 CTC): 169주9960 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 169주9960
+[샘플] GT: 145하5907
+  └ Pred (표준 CTC): 145하5907 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 145하5907
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 68] Train Loss: 0.0030 | Val Loss: 0.0874 | Val Acc: 92.5800% | Char Acc (평균): 96.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_68.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 09다3208
+  └ Pred (표준 CTC): 09다3208 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 09다3208
+[샘플] GT: 인천72바1469
+  └ Pred (표준 CTC): 서울74바1469 | Char Acc: 66.6700%
+  └ Pred (Beam Search): 서울74바1469
+[샘플] GT: 17소2548
+  └ Pred (표준 CTC): 17소2548 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 17소2548
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 69] Train Loss: 0.0030 | Val Loss: 0.0846 | Val Acc: 93.0400% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_69.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 경기71아8062
+  └ Pred (표준 CTC): 경기71아8062 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아8062
+[샘플] GT: 88마6251
+  └ Pred (표준 CTC): 88마6251 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 88마6251
+[샘플] GT: 87조2435
+  └ Pred (표준 CTC): 87조2435 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 87조2435
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 70] Train Loss: 0.0026 | Val Loss: 0.0871 | Val Acc: 93.1300% | Char Acc (평균): 96.6667%
+✅ 모델 저장됨: checkpoints/crnn_epoch_70.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기79바1123
+  └ Pred (표준 CTC): 인천78바1123 | Char Acc: 66.6700%
+  └ Pred (Beam Search): 인천78바1123
+[샘플] GT: 경기37바6718
+  └ Pred (표준 CTC): 경기37바6718 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6718
+[샘플] GT: 경기37바6766
+  └ Pred (표준 CTC): 경기37바6766 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6766
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 71] Train Loss: 0.0028 | Val Loss: 0.0823 | Val Acc: 92.7800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_71.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 09무0636
+  └ Pred (표준 CTC): 09무0636 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 09무0636
+[샘플] GT: 95주3360
+  └ Pred (표준 CTC): 95주3360 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 95주3360
+[샘플] GT: 경기37바5083
+  └ Pred (표준 CTC): 경기37바5083 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5083
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 72] Train Loss: 0.0027 | Val Loss: 0.0772 | Val Acc: 93.5000% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_72.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바4784
+  └ Pred (표준 CTC): 경기37바4784 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4784
+[샘플] GT: 159하5460
+  └ Pred (표준 CTC): 159하5460 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 159하5460
+[샘플] GT: 경기37바6342
+  └ Pred (표준 CTC): 경기37바6342 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6342
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 73] Train Loss: 0.0026 | Val Loss: 0.0791 | Val Acc: 93.1200% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_73.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 55서8513
+  └ Pred (표준 CTC): 55서8513 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 55서8513
+[샘플] GT: 81소3859
+  └ Pred (표준 CTC): 81소3859 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 81소3859
+[샘플] GT: 87더0997
+  └ Pred (표준 CTC): 87더0997 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 87더0997
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 74] Train Loss: 0.0022 | Val Loss: 0.0835 | Val Acc: 92.8200% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_74.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 경기37바1400
+  └ Pred (표준 CTC): 경기37바1400 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바1400
+[샘플] GT: 113라9516
+  └ Pred (표준 CTC): 113라9516 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 113라9516
+[샘플] GT: 39가1247
+  └ Pred (표준 CTC): 39가1247 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 39가1247
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 75] Train Loss: 0.0021 | Val Loss: 0.0820 | Val Acc: 93.4900% | Char Acc (평균): 98.8889%
+✅ 모델 저장됨: checkpoints/crnn_epoch_75.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 23두3974
+  └ Pred (표준 CTC): 23두3974 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 23두3974
+[샘플] GT: 90러0750
+  └ Pred (표준 CTC): 90러0750 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 90러0750
+[샘플] GT: 234나2803
+  └ Pred (표준 CTC): 234나2803 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 234나2803
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 76] Train Loss: 0.0021 | Val Loss: 0.0805 | Val Acc: 93.5800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_76.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바6465
+  └ Pred (표준 CTC): 경기37바6465 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6465
+[샘플] GT: 17우1733
+  └ Pred (표준 CTC): 17우1733 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 17우1733
+[샘플] GT: 51도2132
+  └ Pred (표준 CTC): 51도2132 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 51도2132
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 77] Train Loss: 0.0017 | Val Loss: 0.0759 | Val Acc: 94.1600% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_77.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 45다8967
+  └ Pred (표준 CTC): 45다8967 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 45다8967
+[샘플] GT: 145허4957
+  └ Pred (표준 CTC): 145허4957 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 145허4957
+[샘플] GT: 경기83배1647
+  └ Pred (표준 CTC): 경기83배1647 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기83배1647
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 78] Train Loss: 0.0019 | Val Loss: 0.0755 | Val Acc: 94.1200% | Char Acc (평균): 98.7500%
+✅ 모델 저장됨: checkpoints/crnn_epoch_78.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 경기37바1774
+  └ Pred (표준 CTC): 경기37바1774 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바1774
+[샘플] GT: 경기37바1945
+  └ Pred (표준 CTC): 경기37바1945 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바1945
+[샘플] GT: 16러7785
+  └ Pred (표준 CTC): 16러7785 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 16러7785
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 79] Train Loss: 0.0018 | Val Loss: 0.0776 | Val Acc: 93.6800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_79.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 16소0837
+  └ Pred (표준 CTC): 16소0837 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 16소0837
+[샘플] GT: 51더0800
+  └ Pred (표준 CTC): 51더0800 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 51더0800
+[샘플] GT: 39라7126
+  └ Pred (표준 CTC): 39라7126 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 39라7126
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 80] Train Loss: 0.0016 | Val Loss: 0.0753 | Val Acc: 93.7800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_80.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 158주4255
+  └ Pred (표준 CTC): 158주4255 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 158주4255
+[샘플] GT: 60로1367
+  └ Pred (표준 CTC): 60로1367 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 60로1367
+[샘플] GT: 경기71아1458
+  └ Pred (표준 CTC): 경기71아1458 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1458
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 81] Train Loss: 0.0015 | Val Loss: 0.0760 | Val Acc: 94.1000% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_81.pth
+⏳ 향상되지 않음 (counter: 4/20)
+[샘플] GT: 66수7600
+  └ Pred (표준 CTC): 66수7600 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 66수7600
+[샘플] GT: 49루2250
+  └ Pred (표준 CTC): 49루2250 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 49루2250
+[샘플] GT: 82러1471
+  └ Pred (표준 CTC): 82러1471 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 82러1471
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 82] Train Loss: 0.0017 | Val Loss: 0.0757 | Val Acc: 94.2100% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_82.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 47고0126
+  └ Pred (표준 CTC): 47고0126 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 47고0126
+[샘플] GT: 14머5173
+  └ Pred (표준 CTC): 14머5173 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 14머5173
+[샘플] GT: 28서5953
+  └ Pred (표준 CTC): 28서5953 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 28서5953
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 83] Train Loss: 0.0016 | Val Loss: 0.0747 | Val Acc: 94.1300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_83.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 경기71아8184
+  └ Pred (표준 CTC): 경기71아8184 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아8184
+[샘플] GT: 45소6875
+  └ Pred (표준 CTC): 45소6875 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 45소6875
+[샘플] GT: 24거8373
+  └ Pred (표준 CTC): 24거8373 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 24거8373
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 84] Train Loss: 0.0012 | Val Loss: 0.0772 | Val Acc: 94.0500% | Char Acc (평균): 94.4444%
+✅ 모델 저장됨: checkpoints/crnn_epoch_84.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 경기71아1308
+  └ Pred (표준 CTC): 경기71아1308 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1308
+[샘플] GT: 경기71아1446
+  └ Pred (표준 CTC): 경기71아1446 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1446
+[샘플] GT: 경기71아3639
+  └ Pred (표준 CTC): 경기713639 | Char Acc: 44.4400%
+  └ Pred (Beam Search): 경기713639
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 85] Train Loss: 0.0011 | Val Loss: 0.0758 | Val Acc: 94.2300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_85.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 10거8997
+  └ Pred (표준 CTC): 10거8997 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 10거8997
+[샘플] GT: 23두9709
+  └ Pred (표준 CTC): 23두9709 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 23두9709
+[샘플] GT: 63하9576
+  └ Pred (표준 CTC): 63하9576 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 63하9576
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 86] Train Loss: 0.0011 | Val Loss: 0.0755 | Val Acc: 94.2200% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_86.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 35버2451
+  └ Pred (표준 CTC): 35버2451 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 35버2451
+[샘플] GT: 08부7380
+  └ Pred (표준 CTC): 08부7380 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 08부7380
+[샘플] GT: 48나5304
+  └ Pred (표준 CTC): 48나5304 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 48나5304
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 87] Train Loss: 0.0011 | Val Loss: 0.0749 | Val Acc: 93.9300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_87.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 서울80배2868
+  └ Pred (표준 CTC): 서울80배2868 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 서울80배2868
+[샘플] GT: 12호8507
+  └ Pred (표준 CTC): 12호8507 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 12호8507
+[샘플] GT: 경기37바4504
+  └ Pred (표준 CTC): 경기37바4504 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4504
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 88] Train Loss: 0.0011 | Val Loss: 0.0729 | Val Acc: 94.2800% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_88.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기91자5988
+  └ Pred (표준 CTC): 경기91자5988 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기91자5988
+[샘플] GT: 경기안양바7594
+  └ Pred (표준 CTC): 경기안양바7594 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기안양바7594
+[샘플] GT: 64너5337
+  └ Pred (표준 CTC): 64너5337 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 64너5337
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 89] Train Loss: 0.0011 | Val Loss: 0.0746 | Val Acc: 94.3400% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_89.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 97어0607
+  └ Pred (표준 CTC): 97어0607 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 97어0607
+[샘플] GT: 경기37바4492
+  └ Pred (표준 CTC): 경기37바4492 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바4492
+[샘플] GT: 충북80배1659
+  └ Pred (표준 CTC): 충북80배1659 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 충북80배1659
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 90] Train Loss: 0.0011 | Val Loss: 0.0753 | Val Acc: 94.3300% | Char Acc (평균): 97.7778%
+✅ 모델 저장됨: checkpoints/crnn_epoch_90.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 258러8305
+  └ Pred (표준 CTC): 258러8305 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 258러8305
+[샘플] GT: 인천85아1744
+  └ Pred (표준 CTC): 인천92아1744 | Char Acc: 77.7800%
+  └ Pred (Beam Search): 인천92아1744
+[샘플] GT: 경기37바6587
+  └ Pred (표준 CTC): 경기37바6587 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바6587
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 91] Train Loss: 0.0010 | Val Loss: 0.0733 | Val Acc: 94.3700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_91.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 38호4257
+  └ Pred (표준 CTC): 38호4257 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 38호4257
+[샘플] GT: 경기37바2337
+  └ Pred (표준 CTC): 경기37바2337 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바2337
+[샘플] GT: 경기71아1593
+  └ Pred (표준 CTC): 경기71아1593 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아1593
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 92] Train Loss: 0.0011 | Val Loss: 0.0753 | Val Acc: 94.1600% | Char Acc (평균): 95.5556%
+✅ 모델 저장됨: checkpoints/crnn_epoch_92.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 08호6328
+  └ Pred (표준 CTC): 08호6328 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 08호6328
+[샘플] GT: 42누3612
+  └ Pred (표준 CTC): 42누3612 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 42누3612
+[샘플] GT: 서울구로카5845
+  └ Pred (표준 CTC): 서울구로카5845 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 서울구로카5845
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 93] Train Loss: 0.0008 | Val Loss: 0.0758 | Val Acc: 94.2300% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_93.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 05조2354
+  └ Pred (표준 CTC): 05조2354 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 05조2354
+[샘플] GT: 경기37바5301
+  └ Pred (표준 CTC): 경기37바5301 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5301
+[샘플] GT: 37로3843
+  └ Pred (표준 CTC): 37로3843 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 37로3843
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 94] Train Loss: 0.0010 | Val Loss: 0.0747 | Val Acc: 94.4200% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_94.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기37바5749
+  └ Pred (표준 CTC): 경기37바5749 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기37바5749
+[샘플] GT: 07러2683
+  └ Pred (표준 CTC): 07러2683 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 07러2683
+[샘플] GT: 02더1772
+  └ Pred (표준 CTC): 02더1772 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 02더1772
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 95] Train Loss: 0.0009 | Val Loss: 0.0735 | Val Acc: 94.5400% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_95.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 경기83배1031
+  └ Pred (표준 CTC): 경기83배1031 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기83배1031
+[샘플] GT: 82루8005
+  └ Pred (표준 CTC): 82루8005 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 82루8005
+[샘플] GT: 90도0529
+  └ Pred (표준 CTC): 90도0529 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 90도0529
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 96] Train Loss: 0.0010 | Val Loss: 0.0774 | Val Acc: 94.1300% | Char Acc (평균): 98.8889%
+✅ 모델 저장됨: checkpoints/crnn_epoch_96.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 62두9513
+  └ Pred (표준 CTC): 62두9513 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 62두9513
+[샘플] GT: 292서5031
+  └ Pred (표준 CTC): 292서5031 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 292서5031
+[샘플] GT: 경기73아3413
+  └ Pred (표준 CTC): 경기71아3413 | Char Acc: 88.8900%
+  └ Pred (Beam Search): 경기71아3413
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 97] Train Loss: 0.0009 | Val Loss: 0.0739 | Val Acc: 94.5600% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_97.pth
+🌟 향상 모델 갱신됨! 저장됨: checkpoints/best_model.pth
+[샘플] GT: 47러9991
+  └ Pred (표준 CTC): 47러9991 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 47러9991
+[샘플] GT: 경기71아6608
+  └ Pred (표준 CTC): 경기71아6608 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기71아6608
+[샘플] GT: 36나5653
+  └ Pred (표준 CTC): 36나5653 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 36나5653
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 98] Train Loss: 0.0010 | Val Loss: 0.0746 | Val Acc: 94.4000% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_98.pth
+⏳ 향상되지 않음 (counter: 1/20)
+[샘플] GT: 66두8491
+  └ Pred (표준 CTC): 66두8491 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 66두8491
+[샘플] GT: 38주7817
+  └ Pred (표준 CTC): 38주7817 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 38주7817
+[샘플] GT: 72주7887
+  └ Pred (표준 CTC): 72주7887 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 72주7887
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 99] Train Loss: 0.0010 | Val Loss: 0.0763 | Val Acc: 94.4700% | Char Acc (평균): 98.7500%
+✅ 모델 저장됨: checkpoints/crnn_epoch_99.pth
+⏳ 향상되지 않음 (counter: 2/20)
+[샘플] GT: 33어1000
+  └ Pred (표준 CTC): 33어1000 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 33어1000
+[샘플] GT: 64더1360
+  └ Pred (표준 CTC): 64더1360 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 64더1360
+[샘플] GT: 150어2795
+  └ Pred (표준 CTC): 150허2795 | Char Acc: 87.5000%
+  └ Pred (Beam Search): 150허2795
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+[Epoch 100] Train Loss: 0.0010 | Val Loss: 0.0769 | Val Acc: 94.3700% | Char Acc (평균): 100.0000%
+✅ 모델 저장됨: checkpoints/crnn_epoch_100.pth
+⏳ 향상되지 않음 (counter: 3/20)
+[샘플] GT: 경기91바7533
+  └ Pred (표준 CTC): 경기91바7533 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 경기91바7533
+[샘플] GT: 72나9667
+  └ Pred (표준 CTC): 72나9667 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 72나9667
+[샘플] GT: 01호9634
+  └ Pred (표준 CTC): 01호9634 | Char Acc: 100.0000%
+  └ Pred (Beam Search): 01호9634
+📄 예측 샘플 로그 저장됨: sample_predictions.csv
+wandb:
+wandb:
+wandb: Run history:
+wandb: char_accuracy ▁▅▆▇▇▇▇█▇▇████▇█████████████████████████
+wandb:         epoch ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▆▆▆▆▇▇▇▇▇▇█████
+wandb:          loss █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:            lr ▁▂▃▅▇█████▇▇▇▆▆▆▅▅▅▅▅▄▄▄▄▄▃▃▃▂▂▂▁▁▁▁▁▁▁▁
+wandb:       val_acc ▁▅▆▇▇▇▇▇▇▇██▇█████▇█████████████████████
+wandb:      val_loss █▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:
+wandb: Run summary:
+wandb: char_accuracy 100
+wandb:         epoch 100
+wandb:          loss 0.00104
+wandb:            lr 0.0
+wandb:       val_acc 94.37
+wandb:      val_loss 0.07694
+wandb:
+wandb:  View run train_v1.4 at: https://wandb.ai/ygchun123-/crnn-ocr/runs/bffqf8t5
+wandb:  View project at: https://wandb.ai/ygchun123-/crnn-ocr
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: wandb_logs\wandb\run-20250411_032851-bffqf8t5\logs
+📄 학습 로그 저장됨: train_log.csv
+
+(crnn_ocr) G:\Projects\crnn_ocr>
