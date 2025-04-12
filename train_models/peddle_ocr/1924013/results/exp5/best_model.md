@@ -1,0 +1,1 @@
+모델은 [이 링크](https://naver.me/IFgig0os)를 참고하세요.
