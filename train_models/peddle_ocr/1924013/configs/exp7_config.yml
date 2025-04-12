@@ -1,0 +1,128 @@
+Global:
+  use_visualdl: false
+  use_wandb: true
+  epoch_num: 120
+  use_amp: true
+  amp_level: O2
+  amp_dtype: float16
+  use_gpu: true
+  log_smooth_window: 20
+  print_batch_step: 10
+  save_model_dir: F:/output/exp7/
+  save_epoch_step: 1
+  eval_batch_step: [0, 500]
+  cal_metric_during_train: true
+  pretrained_model: null
+  checkpoints: 
+  save_inference_dir: null
+  infer_img: doc/imgs_words/ch/word_1.jpg
+  character_dict_path: ./ppocr/utils/numberplate_dict.txt
+  max_text_length: 16
+  infer_mode: false
+  use_space_char: false
+
+wandb:
+  project: korean_numberplate_ocr
+  name: exp7
+  entity: 1924013-
+
+Optimizer:
+  name: AdamW
+  beta1: 0.9
+  beta2: 0.999
+  lr:
+    name: LinearWarmupCosine
+    learning_rate: 0.001
+    start_lr: 1e-5
+    warmup_steps: 1000
+    min_lr: 1e-7
+  regularizer:
+    name: L2
+    factor: 0.0001
+
+Architecture:
+  model_type: rec
+  algorithm: CRNN
+  Transform: null
+  Backbone:
+    name: ResNet
+    layers: 18
+    disable_se: False
+  Neck:
+    name: SequenceEncoder
+    encoder_type: rnn
+    hidden_size: 384
+  Head:
+    name: CTCHead
+    fc_decay: 0.0001
+
+Loss:
+  name: CTCLoss
+
+PostProcess:
+  name: CTCLabelDecode
+  character_dict_path: ./ppocr/utils/numberplate_dict.txt
+  use_space_char: false
+
+Metric:
+  name: RecMetric
+  main_indicator: acc
+
+Train:
+  dataset:
+    name: SimpleDataSet
+    data_dir: ./TrainingImg
+    label_file_list:
+      - ./TrainLabel/rec_gt.txt
+    transforms:
+      - DecodeImage:
+          img_mode: BGR
+          channel_first: false
+      - RecAug:
+          use_tia: true
+          aug_prob: 0.7
+      - RandAugment:
+          num_ops: 2         # 두 개의 랜덤 연산 적용
+          magnitude: 9       # 변형 강도 (기본: 9~15 권장)
+      - CTCLabelEncode: null
+      - RecResizeImg:
+          image_shape: [3, 32, 160]
+          padding: true
+      - KeepKeys:
+          keep_keys: ['image', 'label', 'length']
+
+
+  loader:  # ✅ 이게 꼭 있어야 함
+    shuffle: true
+    batch_size_per_card: 128
+    drop_last: true
+    num_workers: 10
+    use_shared_memory: false
+
+
+
+Eval:
+  interval: 100
+  dataset:
+    name: SimpleDataSet
+    data_dir: ./evalImg
+    label_file_list:
+      - ./evalLabel/eval_gt.txt
+    transforms:
+      - DecodeImage:
+          img_mode: BGR
+          channel_first: false
+      - CTCLabelEncode:
+      - RecResizeImg:
+          image_shape: [3, 32, 160]
+          padding: true
+      - KeepKeys:
+          keep_keys: ['image', 'label', 'length']
+  loader:
+    shuffle: false
+    batch_size_per_card: 128
+    drop_last: false
+    num_workers: 10
+  use_shared_memory: false
+
+profiler_options: null
