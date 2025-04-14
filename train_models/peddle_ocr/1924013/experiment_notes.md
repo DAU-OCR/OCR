@@ -271,6 +271,44 @@
 **강화된 증강 적용 (TIA 제거 + 100% 증강 적용)**을 통해  
 **성능 상한 돌파**를 노린 실험이다.
 
+---
+
+### 🚀 Experiment 10
+
+- **Train Accuracy**: 약 0.93까지 빠르게 도달  
+- **Eval Accuracy (eval/best_acc)**: 최종 **0.84**  
+- **Norm Edit Distance**: 약 0.96 수준 도달  
+- **Loss**: 빠르게 감소하였으나, 일정 구간 이후 정체  
+- **수렴 성향**: `exp9`보다 더 빠르게 상승했으나, **결국 비슷한 수준에서 수렴**
+
+**결론**:  
+모델 용량 증가(`hidden_size=384`, `SE=False`) 및 증강 확장(`aug_prob=1.0`, `TIA 제거`)을 통해  
+학습 안정성은 유지되었으나, **최종 성능 상한은 여전히 벽 존재**  
+→ 더 근본적인 구조 확장을 통한 성능 극대화 필요
+
+---
+
+### 🛠 개선점 (Exp10 → Exp11)
+
+| 항목 | Exp10 | Exp11 |
+|------|--------|--------|
+| hidden_size | 384 | **512** |
+| backbone.layers | ResNet18 | **ResNet34** |
+| disable_se | False | **True** |
+| regularizer.factor | 0.01 | **0.001** |
+| warmup_steps | 2500 | **1000** |
+| batch_size_per_card | 192 | **160** |
+| use_tia | False | **True (tia_prob=0.8)** |
+| aug_prob | 1.0 | 1.0 (동일) |
+| 추가 증강 | 없음 | ✅ **blur, hsv, jitter, crop, reverse 등 복합 RecAug 적용**
+
+**요약**:  
+`exp10`에서 수렴 성능 한계가 명확해짐에 따라,  
+`exp11`은 모델 용량을 더욱 키우고 (ResNet34 + hidden 512),  
+다양한 이미지 증강을 조합하여 **최대의 best_acc 달성**을 목표로 설정됨
+
+// exp11_1 : Rec Aug 수치 대폭 하향
+
 
 
 
