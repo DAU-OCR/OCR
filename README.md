@@ -98,6 +98,7 @@ YOLOv5 GitHub
 
 Streamlit Docs
 
+ClovaOCR
 ---
 
 ## 📜 라이선스
