@@ -1,0 +1,56 @@
+
+Global:
+  epochs: 120
+  batch_size: 176
+  img_height: 48
+  img_width: 320
+  character_dict_path: C:/Users/Admin/Desktop/easyocr_finetune_template/utils/ko_char.txt
+  save_model_path: ./output/korean_g2_finetuned.pth
+  device: 'cuda'
+  use_amp: true
+
+Optimizer:
+  name: AdamW
+  lr: 0.001
+  weight_decay: 0.0005
+  scheduler: OneCycle
+  start_lr: 1e-5
+  max_lr: 0.001
+  min_lr: 3e-5
+  warmup_steps: 1500
+
+Model:
+  input_channel: 1
+  output_channel: 256
+  hidden_size: 256
+  network_arch: korean_g2
+  model_path: custom_weights_easyOCR/korean_g2.pth
+
+Dataset:
+  train_label_file: ./data/train_label.txt
+  train_img_dir: ./data/train_images
+  eval_label_file: ./data/eval_label.txt
+  eval_img_dir: ./data/eval_images
+
+wandb:
+  project: korean_numberplate_ocr
+  name: exp14_finetune
+  entity: 1924013-
+
+EarlyStopping:
+  monitor: eval/acc
+  patience: 5
+
+Augmentation:
+  use_tia: true
+  tia_prob: 0.5
+  crop_prob: 0.3
+  reverse_prob: 0.3
+  noise_prob: 0.3
+  jitter_prob: 0.3
+  blur_prob: 0.3
+  hsv_aug_prob: 0.3
+  aug_prob: 1.0
+
+Logging:
+  log_interval: 10
