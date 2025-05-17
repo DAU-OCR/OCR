@@ -1,0 +1,108 @@
+/* ResultsPage.css */
+
+.results-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.card {
+  width: 720px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 24px;
+  text-align: center;
+}
+
+.preview-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.preview-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.results-table th {
+  background: #fafafa;
+}
+
+.row-image {
+  width: 100px;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.no-data {
+  padding: 16px;
+  color: #666;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Download Button */
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+}
+
+.download-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.download-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+}
+
+/* Reset Button */
+.reset-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background: #c82333;
+}
