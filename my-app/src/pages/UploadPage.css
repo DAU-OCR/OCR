@@ -3,19 +3,13 @@
 .upload-page {
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* 가운데 정렬 대신 위쪽 정렬 */
+  align-items: flex-start;
+  /* 상단 네비 등 공간 고려해서 패딩 주기 */
+  padding-top: 100px;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: none;      /* 회색 배경 제거 */
   position: relative;
-}
-
-.profile-link {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 14px;
-  color: #333;
-  text-decoration: none;
 }
 
 .card {
@@ -23,15 +17,22 @@
   background: #fff;
   padding: 40px 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  /* 그림자 진하고 부드럽게 */
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.10),
+    0 12px 24px rgba(0,0,0,0.08),
+    0 16px 32px rgba(0,0,0,0.06);
+  /* margin-top 제거 (align-items 로 조정) */
+  margin-top: 0;
   text-align: center;
 }
+
+/* 이하 기존 스타일 그대로… */
 
 .upload-icon {
   width: 120px;
   height: auto;
-  margin: 0 auto 16px;
-  display: block;
+  margin-bottom: 16px;
 }
 
 .card h1 {
@@ -66,13 +67,11 @@
   margin-bottom: 24px;
 }
 
-/* ★ 원본 비율 유지 썸네일 ★ */
 .preview {
   max-width: 80px;
   max-height: 80px;
   border: 1px solid #eee;
   border-radius: 4px;
-  /* object-fit 제거 → 원본 비율 유지 */
 }
 
 .submit-button {

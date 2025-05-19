@@ -44,21 +44,24 @@
 .nav-links {
   text-align: center;
   margin: 20px 0;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .nav-links a {
-  color: #007bff;
-  text-decoration: none;
-  margin: 0 8px;
+  color: black !important;               /* 기본 검은색 */
+  text-decoration: none !important;     
+  margin: 50px; 
 }
 
 .nav-links .divider {
   color: #555;
 }
 
+
+
 .nav-links a:hover {
-  text-decoration: underline;
+  color: #007bff !important;             /* 호버 시 파란색 */
+  border-bottom: 2px solid #007bff !important;
 }
 
 /* 페이지 전체 너비를 잡고 중앙 정렬 */
