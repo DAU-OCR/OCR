@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------------
+dataset_root: C:/Users/HOME/Desktop/testyolo/easyOCR/dataset/training
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    C:/Users/HOME/Desktop/testyolo/easyOCR/dataset/training	 dataset: /
+sub-directory:	/.	 num samples: 55103
+num total samples of /: 55103 x 1.0 (total_data_usage_ratio) = 55103
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    C:/Users/HOME/Desktop/testyolo/easyOCR/dataset/validation	 dataset: /
+sub-directory:	/.	 num samples: 6819
+--------------------------------------------------------------------------------

@@ -4,3 +4,5 @@
 *.webp
 *.pdopt
 *.pdparams
+*.pth
+*.mdb

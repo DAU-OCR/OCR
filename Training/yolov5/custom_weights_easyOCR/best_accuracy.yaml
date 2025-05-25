@@ -1,0 +1,13 @@
+model_type: common
+imgH: 32
+lang_list: ["ko"]
+character_list: "0123456789가강거경계고공관광교구금기김나남너노누다대더도동두등라러로루릉리마머명모목무문미바배백버보부북사산서성세소수시아악안양어여연영오외용우울원육의이인자작저전정제조종주준중지차창천청초추춘충카타태통파평포표하해허협호홀홍흥히"
+network_params:
+  input_channel: 1
+  output_channel: 256
+  hidden_size: 256
+  batch_max_length: 25
+  Transformation: None
+  FeatureExtraction: VGG
+  SequenceModeling: BiLSTM
+  Prediction: CTC
