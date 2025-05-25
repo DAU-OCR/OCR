@@ -1,0 +1,25 @@
+Global:
+  use_gpu: true
+  use_xpu: false
+  use_fp16: false
+  ir_optim: true
+  use_tensorrt: false
+  min_subgraph_size: 15
+  precision: fp32
+  infer_mode: true
+  use_pdserving: false
+  benchmark: false
+  save_log_path: ./output/success/predict.txt
+  show_log: true
+  use_onnx: false
+  enable_mkldnn: false
+  cpu_threads: 10
+  det: false
+  rec: true
+  cls: false
+  rec_model_dir: ./test_model
+  rec_image_dir: ./test_images
+  rec_algorithm: CRNN
+  rec_char_dict_path: ./test_model/numberplate_dict.txt
+  use_space_char: false
+  draw_img_save_dir: ./output/success

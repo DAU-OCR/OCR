@@ -1,0 +1,48 @@
+Global:
+  use_gpu: true
+  infer_mode: true
+  character_dict_path: ./test_model/numberplate_dict.txt
+  character_type: ch
+  use_space_char: false
+  pretrained_model: ./test_model/inference
+  print_batch_step: 1
+  infer_img: ./test_images/
+  max_text_length: 16
+  draw_img_save_dir: ./output/success
+  save_res_path: ./output/success/predict.txt
+
+Architecture:
+  model_type: rec
+  algorithm: CRNN
+  Transform: null
+  Backbone:
+    name: ResNet
+    layers: 18
+    disable_se: true
+  Neck:
+    name: SequenceEncoder
+    encoder_type: rnn
+    hidden_size: 256
+  Head:
+    name: CTCHead
+    fc_decay: 0.0001
+
+PostProcess:
+  name: CTCLabelDecode
+  character_dict_path: ./test_model/numberplate_dict.txt
+  use_space_char: false
+
+RecInferReader:
+  infer_img: ./test_images/
+Eval:
+  dataset:
+    transforms:
+      - DecodeImage:
+          img_mode: BGR
+          channel_first: false
+      - CTCLabelEncode: null
+      - RecResizeImg:
+          image_shape: [3, 32, 160]
+          padding: true
+      - KeepKeys:
+          keep_keys: ['image', 'label', 'length']

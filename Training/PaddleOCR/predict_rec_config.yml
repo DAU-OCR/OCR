@@ -1,0 +1,14 @@
+Global:
+  use_gpu: true
+  use_xpu: false
+  ir_optim: true
+  use_tensorrt: false
+  enable_mkldnn: false
+  use_fp16: false
+  rec_algorithm: CRNN
+  rec_model_dir: ./test_model
+  rec_image_dir: ./test_images
+  rec_char_dict_path: ./test_model/numberplate_dict.txt
+  use_space_char: false
+  save_log_path: ./output/success/predict.txt
+  draw_img_save_dir: ./output/success
