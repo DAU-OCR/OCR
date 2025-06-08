@@ -2,8 +2,8 @@ import torch
 import numpy as np
 from torchvision import transforms
 from PIL import Image
-from model.crnn import CRNN
-from utils.label_encoder import LabelEncoder
+from ocr.model.crnn import CRNN
+from ocr.utils.label_encoder import LabelEncoder
 
 # Beam Search 디코딩 (simple version)
 def decode_beam_search(logits, encoder, beam_width=3):
