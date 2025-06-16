@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>차량번호판 OCR 테스트</title>
+</head>
+<body style="font-family: sans-serif; padding: 2rem;">
+  <h1>차량번호판 OCR 테스트</h1>
+  <input type="file" id="fileInput" accept="image/*" />
+  <button id="uploadBtn">업로드 및 인식</button>
+
+  <h2>결과</h2>
+  <pre id="result" style="background:#f0f0f0; padding:1rem;"></pre>
+
+  <script>
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const input = document.getElementById('fileInput');
+      if (!input.files.length) {
+        alert('이미지를 선택해주세요.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', input.files[0]);
+
+      try {
+        const res = await fetch('http://localhost:5000/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('result').textContent = '오류: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

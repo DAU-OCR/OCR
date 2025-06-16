@@ -1,0 +1,113 @@
+/* ResultsPage.css (Updated for full-width card and preview box) */
+
+/* Override App.css page-container limits */
+.page-container {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Main wrapper */
+.results-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 100px;
+  background: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card fills viewport width with max constraints */
+.results-page .card {
+  width: 90vw;            /* Viewport width 90% */
+  max-width: 1200px;      /* Maximum width */
+  background: #fff;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.15),
+    0 8px 24px rgba(0,0,0,0.10);
+  margin: 0 auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Title */
+.preview-title {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Preview box expands full width inside card */
+.results-page .preview-box {
+  width: 100%;
+  height: 600px;
+  margin: 0 auto 32px;
+  padding: 20px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Table styles */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.results-table th,
+.results-table td {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+.results-table th {
+  background: #f0f0f0;
+}
+
+/* Image thumbnail */
+.row-image {
+  width: 160px;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* Buttons auto-width */
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+.download-button,
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  width: auto;
+}
+.download-button:hover,
+.reset-button:hover {
+  background: #f0f0f0;
+}
+
+/* Icon size */
+.download-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
