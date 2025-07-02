@@ -43,8 +43,11 @@
 
 .nav-links {
   text-align: center;
-  margin: 20px 0;
-  font-size: 20px;
+  margin: 40px 0;
+  font-size: 25px;
+  font-family: 'Cafe24Ssurround';
+  position: relative;
+  left: 25px;
 }
 
 .nav-links a {
@@ -69,4 +72,11 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 16px;
+}
+
+/* 폰트 */
+@font-face {
+  font-family: 'Cafe24Ssurround';
+  src: url('fonts/Cafe24Ssurround.ttf') format('opentype');
+  font-style: normal;
 }

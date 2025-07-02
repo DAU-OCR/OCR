@@ -27,7 +27,7 @@ export default function App() {
             }`
           }
         >
-          메인
+          메인  
         </NavLink>
         <NavLink
           to="/results"

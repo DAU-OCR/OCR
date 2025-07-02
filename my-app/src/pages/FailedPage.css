@@ -39,7 +39,7 @@
 /* Title styling */
 .preview-title {
   margin-bottom: 32px;
-  font-size: 28px;
+  font-size: 38px;
   font-weight: bold;
   color: #333;
 }
@@ -109,4 +109,13 @@
 }
 .reset-button:hover {
   background: #f0f0f0;
+}
+
+.cancel-icon {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  top: 4px;
+  margin-left: 37px;
+  margin-right: 37px;
 }

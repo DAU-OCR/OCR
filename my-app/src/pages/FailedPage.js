@@ -22,7 +22,8 @@ export default function FailedPage() {
   return (
     <div className="results-page failed-page">
       <div className="card">
-        <h2 className="preview-title">실패한 사진 모음</h2>
+        <h2 className="preview-title"><img src="/icons/cancel.png" alt="실패" className="cancel-icon"/>
+        실패한 사진<img src="/icons/cancel.png" alt="실패" className="cancel-icon"/></h2>
         <div className="preview-box">
           {rows.length > 0 ? (
             <table className="results-table">
