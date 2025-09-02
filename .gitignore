@@ -1,0 +1,39 @@
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python
+/server/venv/
+/server/build/
+/server/dist/
+/server/__pycache__/
+/server/yolov5/
+*.pyc
+*.pyo
+*.pyd
+*.spec
+
+# Node.js
+/ocr-web/node_modules/
+/ocr-web/dist/
+/ocr-web/release/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Model files
+/server/custom_weights/
+/server/custom_weights_easyOCR/
+/server/models/
+
+# Uploaded files
+/server/uploads/
+
+# Log files
+*.log

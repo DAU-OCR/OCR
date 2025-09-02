@@ -6,6 +6,7 @@ import torch
 import easyocr
 import numpy as np
 import pandas as pd
+import sys
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from werkzeug.utils import secure_filename
@@ -15,6 +16,15 @@ from openpyxl.drawing.image import Image as XLImage
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 import warnings
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 # 환경 설정
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -132,14 +142,16 @@ def apply_plate_selection_logic(t1, c1, t2, c2, hangul_dict):
 # 모델 로딩
 yolo_model = torch.hub.load('ultralytics/yolov5', 'custom',
                             path=os.path.join(BASE_DIR, 'custom_weights', 'best.pt'),
-                            force_reload=False, verbose=False)
+                            force_reload=True, verbose=False)
+
+model_path = resource_path('custom_weights_easyOCR')
 reader1 = easyocr.Reader(['ko'], gpu=False,
-                         model_storage_directory='custom_weights_easyOCR',
-                         user_network_directory='custom_weights_easyOCR',
+                         model_storage_directory=model_path,
+                         user_network_directory=model_path,
                          recog_network='korean_g2', download_enabled=False)
 reader2 = easyocr.Reader(['en'], gpu=False,
-                         model_storage_directory='custom_weights_easyOCR',
-                         user_network_directory='custom_weights_easyOCR',
+                         model_storage_directory=model_path,
+                         user_network_directory=model_path,
                          recog_network='best_acc', download_enabled=False)
 
 MIN_AREA = 1400
