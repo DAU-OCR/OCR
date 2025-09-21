@@ -10,7 +10,7 @@ export default function ResultsPage() {
 
   // 결과 불러오기
   useEffect(() => {
-    axios.get('/results')
+    axios.get('http://localhost:5000/results')
       .then(res => {
         // 파일명 기준 정렬
         const sorted = res.data.sort((a, b) => a.image.localeCompare(b.image));
@@ -56,7 +56,7 @@ export default function ResultsPage() {
 
     // (2) 서버에 엑셀 요청
     setDownloading(true);
-    const res = await axios.get('/download', { responseType: 'blob' });
+    const res = await axios.get('http://localhost:5000/download', { responseType: 'blob' });
     const blob = new Blob([res.data], {
       type: res.headers['content-type'],
     });
@@ -123,7 +123,7 @@ export default function ResultsPage() {
                     <td>{i + 1}</td>
                     <td>
                       <img
-                        src={r.visual || r.image}
+                        src={`http://localhost:5000${r.visual || r.image}`}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
                       />
@@ -152,7 +152,7 @@ export default function ResultsPage() {
             {downloading ? '다운로드 중…' : (
               <>
                 <img
-                  src="/icons/download.png"
+                  src="./icons/download.png"
                   alt="다운로드"
                   className="download-icon"
                 />
