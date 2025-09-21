@@ -40,7 +40,10 @@
       "electron.cjs"
     ],
     "extraFiles": [
-      "../server/dist/ocr_server.exe"
+      {
+        "from": "../server/dist/ocr_server.exe",
+        "to": "."
+      }
     ],
     "directories": {
       "buildResources": "assets",

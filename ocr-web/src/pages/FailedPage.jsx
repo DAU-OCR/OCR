@@ -8,7 +8,7 @@ export default function FailedPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/results')
+    axios.get('http://localhost:5000/results')
       .then(res => {
         const failed = res.data.filter(r => !r.matched);
         setRows(failed);
@@ -38,7 +38,7 @@ export default function FailedPage() {
                     <td>{i + 1}</td>
                     <td>
                       <img
-                        src={r.image}
+                        src={`http://localhost:5000${r.image}`}
                         alt={`실패 ${i + 1}`}
                         className="row-image"
                       />

@@ -47,7 +47,7 @@ export default function UploadPage() {
       const fd = new FormData();
       fd.append('image', files[i]);
       try {
-        await axios.post('/upload', fd);
+        await axios.post('http://localhost:5000/upload', fd);
       } catch (err) {
         console.error('처리 중 에러:', err);
       }
@@ -69,7 +69,7 @@ export default function UploadPage() {
   return (
     <div className="upload-page">
       <div className="card">
-        <img src="/icons/upload.png" alt="Upload Icon" className="upload-icon" />
+                <img src="./icons/upload.png" alt="Upload Icon" className="upload-icon" />
         <h1>이미지/ZIP 업로드</h1>
 
         <input
