@@ -44,6 +44,9 @@
   justify-content: center;
   gap: 8px;
   margin-bottom: 24px;
+  max-height: 180px;     /* ✅ 높이 제한 */
+  overflow: hidden;       /* ✅ 넘치는 미리보기 감춤 */
+  position: relative;
 }
 
 .preview {
@@ -89,7 +92,7 @@
   background: #fff;
   padding: 24px;
   border-radius: 8px;
-  width: 300px;
+  width: 640px;
   text-align: center;
 }
 
@@ -105,7 +108,7 @@
   background: #eee;
   border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin: 16px 0 8px;
 }
 
 .progress-fill.processing {
@@ -117,4 +120,50 @@
 .progress-label {
   font-size: 14px;
   color: #333;
+}
+
+/* ✅ 가로형 단계 프로세스 */
+.phase-progress-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.horizontal-step {
+  display: flex;
+  align-items: center;
+}
+
+.phase-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ccc;
+  color: white;
+  text-align: center;
+  line-height: 28px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.phase-circle.active {
+  background: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.phase-label {
+  font-size: 13px;
+  color: #333;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.horizontal-line {
+  width: 30px;
+  height: 2px;
+  background: #ccc;
 }

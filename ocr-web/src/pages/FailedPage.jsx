@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import './FailedPage.css';
 
 export default function FailedPage() {
   const [rows, setRows] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null); // ✅ 클릭된 이미지 상태
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +22,12 @@ export default function FailedPage() {
   }, []);
 
   return (
-    <div className="results-page failed-page">
+    <motion.div
+      className="results-page failed-page"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="card">
         <h2 className="preview-title">실패한 사진 모음</h2>
         <div className="preview-box">
@@ -41,6 +48,7 @@ export default function FailedPage() {
                         src={r.image}
                         alt={`실패 ${i + 1}`}
                         className="row-image"
+                        onClick={() => setSelectedImage(r.image)} // ✅ 클릭 시 설정
                       />
                     </td>
                   </tr>
@@ -57,6 +65,16 @@ export default function FailedPage() {
           </button>
         </div>
       </div>
-    </div>
+
+      {/* ✅ 확대 이미지 오버레이 */}
+      {selectedImage && (
+        <div className="image-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="image-popup" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={() => setSelectedImage(null)}>×</button>
+            <img src={selectedImage} alt="확대 보기" className="enlarged-image" />
+          </div>
+        </div>
+      )}
+    </motion.div>
   );
 }

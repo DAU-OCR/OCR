@@ -66,6 +66,13 @@
   text-align: center;
   border-bottom: 1px solid #eee;
 }
+
+/* 선택된 결과 강조 스타일 */
+.highlighted-plate {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007BFF; /* 파란색 (Bootstrap Primary Blue) */
+}
 .results-table th {
   background: #f0f0f0;
 }
@@ -110,4 +117,66 @@
   width: 24px;
   height: 24px;
   margin-right: 8px;
+}
+
+/* ✅ 확대 보기 오버레이 */
+.image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.image-popup {
+  position: relative;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 0 16px rgba(0,0,0,0.3);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.enlarged-image {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  border-radius: 4px;
+}
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 선택된 결과 입력 필드 */
+.plate-input {
+  font-size: 16px;
+  padding: 6px 8px;
+  width: 100%;
+  max-width: 160px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  box-sizing: border-box;
 }

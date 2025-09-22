@@ -6,9 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/upload': 'http://localhost:5000',
       '/results': 'http://localhost:5000',
+      '/upload': 'http://localhost:5000',
       '/download': 'http://localhost:5000',
+      '/reset': 'http://localhost:5000',
+      '/update-plates': 'http://localhost:5000',
+      '/uploads': 'http://localhost:5000',
     }
   }
 })
