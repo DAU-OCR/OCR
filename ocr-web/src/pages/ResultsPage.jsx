@@ -6,7 +6,8 @@ import './ResultsPage.css';
 export default function ResultsPage() {
   const [rows, setRows] = useState([]);
   const [downloading, setDownloading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  // selectedImage 대신 전체 행 데이터를 저장하여 다른 정보도 접근할 수 있도록 변경
+  const [selectedRow, setSelectedRow] = useState(null); 
 
   useEffect(() => {
     axios.get('/results')
@@ -25,76 +26,72 @@ export default function ResultsPage() {
       });
   }, []);
 
-
   const handleDownload = async () => {
-  try {
-    // ✅ 1. 수정된 plate 값 서버에 전송
-    await axios.post('/update-plates', rows.map(r => ({
-      image: r.image,
-      plate: r.plate?.trim() || '인식 실패'
-    })));
+    try {
+      // ✅ 1. 수정된 plate 값 서버에 전송
+      await axios.post('/update-plates', rows.map(r => ({
+        image: r.image,
+        plate: r.plate?.trim() || '인식 실패'
+      })));
 
+      // ✅ 2. 날짜 기반 파일 이름 생성
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const filename = `${yyyy}-${mm}-${dd}_차량번호판.xlsx`;
 
-    // ✅ 2. 날짜 기반 파일 이름 생성
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const filename = `${yyyy}-${mm}-${dd}_차량번호판.xlsx`;
-
-    let writable;
-    if ('showSaveFilePicker' in window) {
-      try {
-        const handle = await window.showSaveFilePicker({
-          suggestedName: filename,
-          types: [{
-            description: 'Excel 파일',
-            accept: {
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
-            }
-          }]
-        });
-        writable = await handle.createWritable();
-      } catch (e) {
-        if (e.name === 'AbortError') return;
-        throw e;
+      let writable;
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+              description: 'Excel 파일',
+              accept: {
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+              }
+            }]
+          });
+          writable = await handle.createWritable();
+        } catch (e) {
+          if (e.name === 'AbortError') return;
+          throw e;
+        }
       }
+
+      // ✅ 3. 다운로드 요청
+      setDownloading(true);
+      const res = await axios.get('/download', { responseType: 'blob' });
+      const blob = new Blob([res.data], {
+        type: res.headers['content-type'],
+      });
+
+      // ✅ 4. 파일 저장
+      if (writable) {
+        await writable.write(blob);
+        await writable.close();
+      } else {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      }
+
+    } catch (e) {
+      if (e.response?.status === 400) {
+        alert('인식된 차량 번호판이 없습니다.');
+        return;
+      }
+      alert('다운로드 중 오류가 발생했습니다.');
+    } finally {
+      setDownloading(false);
     }
-
-    // ✅ 3. 다운로드 요청
-    setDownloading(true);
-    const res = await axios.get('/download', { responseType: 'blob' });
-    const blob = new Blob([res.data], {
-      type: res.headers['content-type'],
-    });
-
-    // ✅ 4. 파일 저장
-    if (writable) {
-      await writable.write(blob);
-      await writable.close();
-    } else {
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    }
-
-  } catch (e) {
-    if (e.response?.status === 400) {
-      alert('인식된 차량 번호판이 없습니다.');
-      return;
-    }
-    alert('다운로드 중 오류가 발생했습니다.');
-  } finally {
-    setDownloading(false);
-  }
-};
-
-
+  };
 
   const handleReset = async () => {
     if (!window.confirm('정말 결과를 초기화하시겠습니까?')) return;
@@ -110,6 +107,25 @@ export default function ResultsPage() {
     const updated = [...rows];
     updated[index].plate = newValue;
     setRows(updated);
+  };
+  
+  // 팝업 내부에서 입력값 변경을 처리하는 새로운 함수
+  const handlePopupPlateChange = (newValue) => {
+    if (!selectedRow) return;
+
+    // 현재 팝업에 표시된 행의 인덱스를 찾아 수정
+    const index = rows.findIndex(r => r.image === selectedRow.image);
+    if (index !== -1) {
+      const updatedRows = [...rows];
+      updatedRows[index].plate = newValue;
+      setRows(updatedRows);
+      
+      // 팝업에 표시되는 상태도 업데이트
+      setSelectedRow({
+        ...selectedRow,
+        plate: newValue
+      });
+    }
   };
 
   return (
@@ -142,7 +158,8 @@ export default function ResultsPage() {
                         src={r.visual || r.image}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
-                        onClick={() => setSelectedImage(r.visual || r.image)}
+                        // 클릭 시 전체 행 객체를 전달하도록 변경
+                        onClick={() => setSelectedRow(r)}
                       />
                     </td>
                     <td>{r.text1 || '-'}</td>
@@ -180,12 +197,34 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* 확대 보기 */}
-      {selectedImage && (
-        <div className="image-overlay" onClick={() => setSelectedImage(null)}>
+      {/* ✅ 확대 보기 팝업 (수정 기능 추가) */}
+      {selectedRow && (
+        <div className="image-overlay" onClick={() => setSelectedRow(null)}>
           <div className="image-popup" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={() => setSelectedImage(null)}>×</button>
-            <img src={selectedImage} alt="확대 보기" className="enlarged-image" />
+            <button className="close-button" onClick={() => setSelectedRow(null)}>×</button>
+            <div className="popup-content">
+              <img src={selectedRow.visual || selectedRow.image} alt="확대 보기" className="enlarged-image" />
+              <div className="popup-details">
+                <h3>인식 결과 수정</h3>
+                <div className="result-group">
+                  <span className="result-label">모델1 결과:</span>
+                  <span className="result-value">{selectedRow.text1 || '없음'}</span>
+                </div>
+                <div className="result-group">
+                  <span className="result-label">모델2 결과:</span>
+                  <span className="result-value">{selectedRow.text2 || '없음'}</span>
+                </div>
+                <div className="result-group">
+                  <span className="result-label">최종 결과:</span>
+                  <input
+                    type="text"
+                    className="popup-plate-input"
+                    value={selectedRow.plate?.trim() || '인식 실패'}
+                    onChange={e => handlePopupPlateChange(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
