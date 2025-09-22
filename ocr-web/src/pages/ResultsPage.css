@@ -21,8 +21,8 @@
 
 /* Card fills viewport width with max constraints */
 .results-page .card {
-  width: 90vw;            /* Viewport width 90% */
-  max-width: 1200px;      /* Maximum width */
+  width: 90vw;
+  max-width: 1200px;
   background: #fff;
   border-radius: 8px;
   padding: 40px;
@@ -136,20 +136,76 @@
 .image-popup {
   position: relative;
   background: white;
-  padding: 16px;
+  padding: 24px;
   border-radius: 8px;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 95vw; /* 팝업의 최대 너비를 95vw로 확장 */
+  max-height: 95vh; /* 팝업의 최대 높이를 95vh로 확장 */
   overflow: auto;
   box-shadow: 0 0 16px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease-out;
+  display: flex; /* Flexbox 추가 */
+  gap: 30px; /* 요소 간 간격 설정 */
+  align-items: flex-start; /* 상단 정렬 */
+}
+
+.popup-content {
+  display: flex;
+  gap: 30px;
 }
 
 .enlarged-image {
-  width: 100%;
+  max-width: 75%; /* 이미지의 최대 너비를 75%로 확장 */
   height: auto;
-  max-height: 80vh;
+  max-height: 85vh; /* 이미지의 최대 높이를 85vh로 확장 */
   border-radius: 4px;
+}
+
+.popup-details {
+  flex-grow: 1; /* 남은 공간 채우기 */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-top: 15px;
+}
+
+.popup-details h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: #333;
+}
+
+.result-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.result-label {
+  font-weight: bold;
+  color: #555;
+  font-size: 14px;
+}
+
+.result-value {
+  font-size: 16px;
+  color: #000;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.popup-plate-input {
+  font-size: 16px;
+  padding: 8px;
+  width: 100%;
+  border: 2px solid #007BFF; /* 강조된 테두리 */
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .close-button {
@@ -169,7 +225,7 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* 선택된 결과 입력 필드 */
+/* 선택된 결과 입력 필드 (테이블 내) */
 .plate-input {
   font-size: 16px;
   padding: 6px 8px;
