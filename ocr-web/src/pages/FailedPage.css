@@ -1,4 +1,4 @@
-/* FailedPage.css (Expanded layout + larger images) */
+/* FailedPage.css (Expanded layout + larger images + 이미지 확대 기능 포함) */
 
 /* Remove container width limits */
 .page-container {
@@ -78,6 +78,7 @@
   height: auto;
   border-radius: 4px;
   object-fit: cover;
+  cursor: pointer; /* 클릭 가능하다는 힌트 */
 }
 
 .no-data {
@@ -109,4 +110,60 @@
 }
 .reset-button:hover {
   background: #f0f0f0;
+}
+
+/* ✅ 이미지 클릭 시 확대 오버레이 */
+.image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.image-popup {
+  position: relative;
+  background: white;
+  padding: 24px; /* 패딩을 약간 늘려 여백 확보 */
+  border-radius: 8px;
+  /* 팝업 전체의 최대 너비를 95vw로 확장 */
+  max-width: 95vw;
+  /* 팝업 전체의 최대 높이를 95vh로 확장 */
+  max-height: 95vh;
+  overflow: auto;
+  box-shadow: 0 0 16px rgba(0,0,0,0.3);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.enlarged-image {
+  /* 이미지의 최대 너비를 90%로 확장 */
+  max-width: 90%;
+  height: auto;
+  /* 이미지의 최대 높이를 85vh로 확장 */
+  max-height: 85vh;
+  border-radius: 4px;
+}
+
+/* X 버튼 */
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* 부드러운 등장 효과 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
