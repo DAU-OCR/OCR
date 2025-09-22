@@ -11,7 +11,7 @@ export default function FailedPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/results')
+    axios.get('http://localhost:5000/results')
       .then(res => {
         const failed = res.data
           .filter(r => !r.matched)

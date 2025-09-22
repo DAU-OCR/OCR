@@ -10,7 +10,7 @@ export default function ResultsPage() {
   const [selectedRow, setSelectedRow] = useState(null); 
 
   useEffect(() => {
-    axios.get('/results')
+    axios.get('http://localhost:5000/results')
       .then(res => {
         const sorted = res.data
           .map(r => ({
@@ -155,7 +155,7 @@ export default function ResultsPage() {
                     <td>{i + 1}</td>
                     <td>
                       <img
-                        src={r.visual || r.image}
+                        src={`http://localhost:5000${r.visual || r.image}`}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
                         // 클릭 시 전체 행 객체를 전달하도록 변경
