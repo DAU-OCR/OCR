@@ -47,6 +47,19 @@
   font-size: 20px;
 }
 
+.absolute-logo {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  z-index: 1000;
+}
+
+.logo-img {
+  height: 48px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
 .nav-links a {
   color: black !important;               /* 기본 검은색 */
   text-decoration: none !important;     

@@ -1,19 +1,22 @@
-// src/pages/ResultsPage.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import './ResultsPage.css';
 
 export default function ResultsPage() {
   const [rows, setRows] = useState([]);
   const [downloading, setDownloading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  // 결과 불러오기
   useEffect(() => {
     axios.get('/results')
       .then(res => {
-        // 파일명 기준 정렬
-        const sorted = res.data.sort((a, b) => a.image.localeCompare(b.image));
+        const sorted = res.data
+          .map(r => ({
+            ...r,
+            plate: r.plate?.trim() || '인식 실패'
+          }))
+          .sort((a, b) => a.image.localeCompare(b.image));
         setRows(sorted);
       })
       .catch(e => {
@@ -22,16 +25,23 @@ export default function ResultsPage() {
       });
   }, []);
 
-  // 엑셀 다운로드
- const handleDownload = async () => {
+
+  const handleDownload = async () => {
   try {
+    // ✅ 1. 수정된 plate 값 서버에 전송
+    await axios.post('/update-plates', rows.map(r => ({
+      image: r.image,
+      plate: r.plate?.trim() || '인식 실패'
+    })));
+
+
+    // ✅ 2. 날짜 기반 파일 이름 생성
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const filename = `${yyyy}-${mm}-${dd}_차량번호판.xlsx`;
 
-    // (1) 사용자에게 저장 위치 먼저 요청
     let writable;
     if ('showSaveFilePicker' in window) {
       try {
@@ -46,22 +56,19 @@ export default function ResultsPage() {
         });
         writable = await handle.createWritable();
       } catch (e) {
-        if (e.name === 'AbortError') {
-          console.log('사용자가 저장을 취소했습니다.');
-          return;
-        }
+        if (e.name === 'AbortError') return;
         throw e;
       }
     }
 
-    // (2) 서버에 엑셀 요청
+    // ✅ 3. 다운로드 요청
     setDownloading(true);
     const res = await axios.get('/download', { responseType: 'blob' });
     const blob = new Blob([res.data], {
       type: res.headers['content-type'],
     });
 
-    // (3) 저장
+    // ✅ 4. 파일 저장
     if (writable) {
       await writable.write(blob);
       await writable.close();
@@ -81,28 +88,37 @@ export default function ResultsPage() {
       alert('인식된 차량 번호판이 없습니다.');
       return;
     }
-    console.error('ERROR GET /download', e);
     alert('다운로드 중 오류가 발생했습니다.');
   } finally {
     setDownloading(false);
   }
-  };
+};
 
 
-  // 결과 초기화
+
   const handleReset = async () => {
     if (!window.confirm('정말 결과를 초기화하시겠습니까?')) return;
     try {
-      await axios.post('http://localhost:5000/reset'); // 정확한 Flask 포트
+      await axios.post('http://localhost:5000/reset');
       setRows([]);
     } catch (e) {
-      console.error('ERROR POST /reset', e);
       alert('초기화 중 오류가 발생했습니다.');
     }
   };
 
+  const handlePlateChange = (index, newValue) => {
+    const updated = [...rows];
+    updated[index].plate = newValue;
+    setRows(updated);
+  };
+
   return (
-    <div className="results-page">
+    <motion.div
+      className="results-page"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="card">
         <h2 className="preview-title">미리보기</h2>
         <div className="preview-box">
@@ -126,48 +142,53 @@ export default function ResultsPage() {
                         src={r.visual || r.image}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
+                        onClick={() => setSelectedImage(r.visual || r.image)}
                       />
                     </td>
                     <td>{r.text1 || '-'}</td>
                     <td>{r.text2 || '-'}</td>
-                    <td>{r.plate || '-'}</td>
+                    <td>
+                      <input
+                        type="text"
+                        className="plate-input"
+                        value={r.plate?.trim() || '인식 실패'}
+                        onChange={e => handlePlateChange(i, e.target.value)}
+                      />
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="no-data">
-                    데이터가 없습니다.
-                  </td>
+                  <td colSpan="5" className="no-data">데이터가 없습니다.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
         <div className="actions">
-          <button
-            className="download-button"
-            onClick={handleDownload}
-            disabled={downloading}
-          >
+          <button className="download-button" onClick={handleDownload} disabled={downloading}>
             {downloading ? '다운로드 중…' : (
               <>
-                <img
-                  src="/icons/download.png"
-                  alt="다운로드"
-                  className="download-icon"
-                />
+                <img src="/icons/download.png" alt="다운로드" className="download-icon" />
                 <span>엑셀 파일 다운로드</span>
               </>
             )}
           </button>
-          <button
-            className="reset-button"
-            onClick={handleReset}
-          >
+          <button className="reset-button" onClick={handleReset}>
             초기화
           </button>
         </div>
       </div>
-    </div>
+
+      {/* 확대 보기 */}
+      {selectedImage && (
+        <div className="image-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="image-popup" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={() => setSelectedImage(null)}>×</button>
+            <img src={selectedImage} alt="확대 보기" className="enlarged-image" />
+          </div>
+        </div>
+      )}
+    </motion.div>
   );
 }
