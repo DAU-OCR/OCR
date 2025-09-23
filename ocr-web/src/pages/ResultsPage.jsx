@@ -6,7 +6,6 @@ import './ResultsPage.css';
 export default function ResultsPage() {
   const [rows, setRows] = useState([]);
   const [downloading, setDownloading] = useState(false);
-  // selectedImage 대신 전체 행 데이터를 저장하여 다른 정보도 접근할 수 있도록 변경
   const [selectedRow, setSelectedRow] = useState(null); 
 
   useEffect(() => {
@@ -26,15 +25,43 @@ export default function ResultsPage() {
       });
   }, []);
 
+  // ✅ 키보드 이벤트 핸들러 추가 및 Page Up/Down 스크롤 방지
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // 팝업이 열려 있는 경우에만 작동
+      if (selectedRow) {
+        const currentIndex = rows.findIndex(r => r.image === selectedRow.image);
+        
+        if (e.key === 'PageDown') {
+          e.preventDefault(); // 스크롤 방지
+          const nextIndex = currentIndex + 1;
+          if (nextIndex < rows.length) {
+            setSelectedRow(rows[nextIndex]);
+          }
+        } else if (e.key === 'PageUp') {
+          e.preventDefault(); // 스크롤 방지
+          const prevIndex = currentIndex - 1;
+          if (prevIndex >= 0) {
+            setSelectedRow(rows[prevIndex]);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedRow, rows]);
+
   const handleDownload = async () => {
     try {
-      // ✅ 1. 수정된 plate 값 서버에 전송
       await axios.post('/update-plates', rows.map(r => ({
         image: r.image,
         plate: r.plate?.trim() || '인식 실패'
       })));
 
-      // ✅ 2. 날짜 기반 파일 이름 생성
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -60,14 +87,12 @@ export default function ResultsPage() {
         }
       }
 
-      // ✅ 3. 다운로드 요청
       setDownloading(true);
       const res = await axios.get('/download', { responseType: 'blob' });
       const blob = new Blob([res.data], {
         type: res.headers['content-type'],
       });
 
-      // ✅ 4. 파일 저장
       if (writable) {
         await writable.write(blob);
         await writable.close();
@@ -109,18 +134,13 @@ export default function ResultsPage() {
     setRows(updated);
   };
   
-  // 팝업 내부에서 입력값 변경을 처리하는 새로운 함수
   const handlePopupPlateChange = (newValue) => {
     if (!selectedRow) return;
-
-    // 현재 팝업에 표시된 행의 인덱스를 찾아 수정
     const index = rows.findIndex(r => r.image === selectedRow.image);
     if (index !== -1) {
       const updatedRows = [...rows];
       updatedRows[index].plate = newValue;
       setRows(updatedRows);
-      
-      // 팝업에 표시되는 상태도 업데이트
       setSelectedRow({
         ...selectedRow,
         plate: newValue
@@ -158,7 +178,6 @@ export default function ResultsPage() {
                         src={`http://localhost:5000${r.visual || r.image}`}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
-                        // 클릭 시 전체 행 객체를 전달하도록 변경
                         onClick={() => setSelectedRow(r)}
                       />
                     </td>
@@ -197,13 +216,12 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* ✅ 확대 보기 팝업 (수정 기능 추가) */}
       {selectedRow && (
         <div className="image-overlay" onClick={() => setSelectedRow(null)}>
           <div className="image-popup" onClick={(e) => e.stopPropagation()}>
             <button className="close-button" onClick={() => setSelectedRow(null)}>×</button>
             <div className="popup-content">
-              <img src={selectedRow.visual || selectedRow.image} alt="확대 보기" className="enlarged-image" />
+              <img src={`http://localhost:5000${selectedRow.visual || selectedRow.image}`} alt="확대 보기" className="enlarged-image" />
               <div className="popup-details">
                 <h3>인식 결과 수정</h3>
                 <div className="result-group">
