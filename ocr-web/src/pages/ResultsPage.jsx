@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:5000'; // axios 기본 URL 설정
 import { motion } from 'framer-motion';
 import './ResultsPage.css';
 
@@ -31,7 +32,7 @@ export default function ResultsPage() {
       // ✅ 1. 수정된 plate 값 서버에 전송
       await axios.post('/update-plates', rows.map(r => ({
         image: r.image,
-        plate: r.plate?.trim() || '인식 실패'
+        plate: r.plate?.trim() || '인식 실패' // 빈 문자열인 경우 '인식 실패'로 변환하여 전송
       })));
 
       // ✅ 2. 날짜 기반 파일 이름 생성
@@ -168,7 +169,7 @@ export default function ResultsPage() {
                       <input
                         type="text"
                         className="plate-input"
-                        value={r.plate?.trim() || '인식 실패'}
+                        value={r.plate} // '인식 실패'일 때 '인식 실패' 표시, 사용자 입력 유지
                         onChange={e => handlePlateChange(i, e.target.value)}
                       />
                     </td>
@@ -186,7 +187,7 @@ export default function ResultsPage() {
           <button className="download-button" onClick={handleDownload} disabled={downloading}>
             {downloading ? '다운로드 중…' : (
               <>
-                <img src="/icons/download.png" alt="다운로드" className="download-icon" />
+                <img src="./icons/download.png" alt="다운로드" className="download-icon" />
                 <span>엑셀 파일 다운로드</span>
               </>
             )}
@@ -203,7 +204,7 @@ export default function ResultsPage() {
           <div className="image-popup" onClick={(e) => e.stopPropagation()}>
             <button className="close-button" onClick={() => setSelectedRow(null)}>×</button>
             <div className="popup-content">
-              <img src={selectedRow.visual || selectedRow.image} alt="확대 보기" className="enlarged-image" />
+              <img src={`http://localhost:5000${selectedRow.visual || selectedRow.image}`} alt="확대 보기" className="enlarged-image" />
               <div className="popup-details">
                 <h3>인식 결과 수정</h3>
                 <div className="result-group">
@@ -219,7 +220,7 @@ export default function ResultsPage() {
                   <input
                     type="text"
                     className="popup-plate-input"
-                    value={selectedRow.plate?.trim() || '인식 실패'}
+                    value={selectedRow.plate} // '인식 실패'일 때 '인식 실패' 표시, 사용자 입력 유지
                     onChange={e => handlePopupPlateChange(e.target.value)}
                   />
                 </div>

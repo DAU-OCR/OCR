@@ -17,8 +17,8 @@ export default function FailedPage() {
           .filter(r => !r.matched)
           .map(r => ({
             ...r,
-            // plate 값이 없으면 '인식 실패'로 초기화
-            plate: r.plate?.trim() || '인식 실패'
+            // plate 값이 없으면 빈 문자열로 초기화
+            plate: r.plate?.trim() || ''
           }))
           .sort((a, b) => a.image.localeCompare(b.image));
         setRows(failed);
@@ -59,7 +59,7 @@ export default function FailedPage() {
       // ✅ 수정된 plate 값 서버에 전송
       await axios.post('/update-plates', rows.map(r => ({
         image: r.image,
-        plate: r.plate?.trim() || '인식 실패'
+        plate: r.plate?.trim() || '인식 실패' // 빈 문자열인 경우 '인식 실패'로 변환하여 전송
       })));
       alert('수정된 내용이 저장되었습니다.');
       navigate(-1);
@@ -96,7 +96,7 @@ export default function FailedPage() {
                     <td>{i + 1}</td>
                     <td>
                       <img
-                        src={r.visual || r.image}
+                        src={`http://localhost:5000${r.visual || r.image}`}
                         alt={`실패 ${i + 1}`}
                         className="row-image"
                         // ✅ 클릭 시 전체 행 객체를 전달하도록 변경
@@ -109,7 +109,7 @@ export default function FailedPage() {
                       <input
                         type="text"
                         className="plate-input"
-                        value={r.plate?.trim() || '인식 실패'}
+                        value={r.plate || ''} // '인식 실패' 대신 빈 문자열로 표시
                         onChange={e => handlePlateChange(i, e.target.value)}
                       />
                     </td>
@@ -135,7 +135,7 @@ export default function FailedPage() {
           <div className="image-popup" onClick={(e) => e.stopPropagation()}>
             <button className="close-button" onClick={() => setSelectedRow(null)}>×</button>
             <div className="popup-content">
-              <img src={selectedRow.visual || selectedRow.image} alt="확대 보기" className="enlarged-image" />
+              <img src={`http://localhost:5000${selectedRow.visual || selectedRow.image}`} alt="확대 보기" className="enlarged-image" />
               <div className="popup-details">
                 <h3>인식 결과 수정</h3>
                 <div className="result-group">
@@ -151,7 +151,7 @@ export default function FailedPage() {
                   <input
                     type="text"
                     className="popup-plate-input"
-                    value={selectedRow.plate?.trim() || '인식 실패'}
+                    value={selectedRow.plate || ''} // '인식 실패' 대신 빈 문자열로 표시
                     onChange={e => handlePopupPlateChange(e.target.value)}
                   />
                 </div>

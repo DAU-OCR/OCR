@@ -31,6 +31,7 @@ def resource_path(relative_path):
 # 환경 설정
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 warnings.filterwarnings("ignore", category=FutureWarning)
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
@@ -232,7 +233,8 @@ def warp_perspective(image, corners, output_size=(200, 60)):
 # 모델 로딩
 yolo_model = torch.hub.load('ultralytics/yolov5', 'custom',
                             path=os.path.join(BASE_DIR, 'custom_weights', 'best.pt'),
-                            force_reload=True, verbose=False)
+                            device='cpu', # 이 부분을 추가합니다.
+                            verbose=False)
 
 model_path = resource_path('custom_weights_easyOCR')
 reader1 = easyocr.Reader(['ko'], gpu=False,
@@ -370,6 +372,78 @@ def upload():
         records.append(result)
 
     return jsonify({'status': 'ok'}), 200
+
+
+@app.route('/download', methods=['GET'])
+def download_excel():
+    # 전체 records를 대상으로 함
+    data = records.copy()
+
+    if not data:
+        return jsonify({'error': '데이터 없음'}), 400
+
+    # matched가 False이면 결과를 "인식 실패"로 통일
+    for r in data:
+        if not r.get('matched'):
+            r['text1'] = '인식 실패'
+            r['text2'] = '인식 실패'
+            r['plate'] = '인식 실패'
+
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine='openpyxl') as writer:
+        df = pd.DataFrame(data)[['text1', 'text2', 'plate']]
+        df.columns = ['모델1 결과', '모델2 결과', '선택된 결과']
+        df.to_excel(writer, index=False, sheet_name='결과')
+        ws = writer.sheets['결과']
+
+        # 이미지 열 추가
+        ws.insert_cols(1)
+        ws.cell(row=1, column=1).value = '차량 이미지'
+
+        # 16:9 비율 크기 설정
+        TARGET_WIDTH = 150
+        TARGET_HEIGHT = 267
+
+        def px_to_col_width(px): return px * 0.14
+        def px_to_row_height(px): return px * 0.75
+
+        for idx, r in enumerate(data, start=2):
+            try:
+                # 원본 업로드된 이미지 경로로 변경
+                img_path = os.path.join(BASE_DIR, r['image'].lstrip('/'))
+                pil = PILImage.open(img_path)
+
+                # (선택사항) 색상 모드 변환
+                if pil.mode != 'RGB':
+                    pil = pil.convert('RGB')
+
+                # 원본 해상도 유지, 압축 없음
+                img_bytes = io.BytesIO()
+                pil.save(img_bytes, format='PNG')
+                img_bytes.seek(0)
+
+                xl_img = XLImage(img_bytes)
+                xl_img.width = TARGET_WIDTH
+                xl_img.height = TARGET_HEIGHT
+
+                ws.add_image(xl_img, f'A{idx}')
+                ws.row_dimensions[idx].height = px_to_row_height(TARGET_HEIGHT)
+
+            except Exception as e:
+                print(f"[이미지 삽입 실패] {r.get('image', '')} → {e}")
+
+
+
+        ws.column_dimensions['A'].width = px_to_col_width(TARGET_WIDTH)
+
+        for col in range(2, 5):
+            ws.column_dimensions[get_column_letter(col)].width = 25
+
+    buf.seek(0)
+    today = datetime.now().strftime('%Y-%m-%d')
+    fname = secure_filename(request.args.get('filename') or f"{today}_plates") + '.xlsx'
+    return send_file(buf, as_attachment=True, download_name=fname,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 @app.route('/results')

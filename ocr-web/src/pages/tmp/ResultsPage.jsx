@@ -152,7 +152,7 @@ export default function ResultsPage() {
             {downloading ? '다운로드 중…' : (
               <>
                 <img
-                  src="/icons/download.png"
+                  src="./icons/download.png"
                   alt="다운로드"
                   className="download-icon"
                 />
