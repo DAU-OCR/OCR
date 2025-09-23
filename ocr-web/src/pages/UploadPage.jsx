@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion'; // ✅ 추가
@@ -13,6 +13,28 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
+
+  // ✅ 백엔드 준비 상태 추가
+  const [isBackendReady, setIsBackendReady] = useState(false);
+
+  // ✅ 백엔드 준비 상태 확인을 위한 폴링
+  useEffect(() => {
+    let intervalId;
+    const checkBackend = async () => {
+      try {
+        await axios.get('http://localhost:5000/results'); // 간단한 엔드포인트로 확인
+        setIsBackendReady(true);
+        clearInterval(intervalId); // 준비되면 폴링 중지
+      } catch (error) {
+        // console.log('Backend not ready yet...');
+      }
+    };
+
+    intervalId = setInterval(checkBackend, 1000); // 1초마다 확인
+
+    // 컴포넌트 언마운트 시 인터벌 정리
+    return () => clearInterval(intervalId);
+  }, []);
 
   const onFileChange = e => {
     const list = Array.from(e.target.files);
@@ -68,7 +90,7 @@ export default function UploadPage() {
       transition={{ duration: 0.6 }}
     >
       <div className="card">
-        <img src="/icons/upload.png" alt="Upload Icon" className="upload-icon" />
+        <img src="./icons/upload.png" alt="Upload Icon" className="upload-icon" />
         <h1>이미지 업로드</h1>
 
         <input
@@ -92,9 +114,9 @@ export default function UploadPage() {
         <button
           className="submit-button"
           onClick={onUpload}
-          disabled={loading}
+          disabled={loading || !isBackendReady} // 백엔드가 준비되지 않으면 비활성화
         >
-          파일 생성 시작
+          {isBackendReady ? '파일 생성 시작' : 'OCR 준비 중...'} {/* 텍스트 변경 */}
         </button>
       </div>
 

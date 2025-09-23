@@ -16,7 +16,7 @@ export default function App() {
     <Router>
       {/* ✅ 절대 위치 로고 */}
       <NavLink to="/" className="absolute-logo">
-        <img src="/icons/logo.png" alt="로고" className="logo-img" />
+        <img src="./icons/logo.png" alt="로고" className="logo-img" />
       </NavLink>
 
       {/* 네비게이션 바 (오른쪽 메뉴들) */}

@@ -1,6 +1,6 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu, MenuItem } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 
 let pythonProcess = null;
 
@@ -34,43 +34,70 @@ function startPythonBackend() {
   });
 }
 
-function createWindow() {
-  const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-    }
+  function createWindow() {
+    const mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+      }
+    });
+
+    // 개발자 도구 메뉴 추가
+    const menu = Menu.buildFromTemplate([
+      {
+        label: '개발자',
+        submenu: [
+          {
+            label: '개발자 도구 토글',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click (item, focusedWindow) {
+              if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+            }
+          }
+        ]
+      }
+    ]);
+    Menu.setApplicationMenu(menu);
+
+    // Load the React app.
+    const startUrl = app.isPackaged
+      ? `file://${path.join(__dirname, 'dist/index.html')}`
+      // In development, load from Vite dev server
+      : 'http://localhost:5173';
+    
+    mainWindow.loadURL(startUrl);
+  }
+  app.whenReady().then(() => {
+    startPythonBackend();
+    createWindow();
+
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
   });
 
-  // Load the React app.
-  const startUrl = app.isPackaged
-    ? `file://${path.join(__dirname, 'dist/index.html')}`
-    // In development, load from Vite dev server
-    : 'http://localhost:5173';
-  
-  mainWindow.loadURL(startUrl);
-}
-
-app.whenReady().then(() => {
-  startPythonBackend();
-  createWindow();
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit();
   });
-});
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-// Make sure to kill the backend process when the app quits.
+  // Make sure to kill the backend process when the app quits.
 app.on('will-quit', () => {
   if (pythonProcess) {
     console.log('Killing Python backend...');
-    pythonProcess.kill();
+    // Windows에서 강제 종료를 위해 taskkill 사용
+    if (process.platform === 'win32') {
+      exec(`taskkill /pid ${pythonProcess.pid} /f /t`, (err) => {
+        if (err) {
+          console.error('Failed to forcefully kill Python backend:', err);
+        } else {
+          console.log('Python backend forcefully killed.');
+        }
+      });
+    } else {
+      pythonProcess.kill();
+    }
     pythonProcess = null;
   }
 });

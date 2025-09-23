@@ -44,6 +44,18 @@
       {
         "from": "../server/dist/ocr_server.exe",
         "to": "."
+      },
+      {
+        "from": "../server/custom_weights",
+        "to": "custom_weights"
+      },
+      {
+        "from": "../server/custom_weights_easyOCR",
+        "to": "custom_weights_easyOCR"
+      },
+      {
+        "from": "../server/yolov5",
+        "to": "yolov5"
       }
     ],
     "directories": {
@@ -51,8 +63,8 @@
       "output": "release"
     },
     "win": {
-      "target": "nsis",
-      "icon": "public/icons/favicon.ico"
+      "target": ["zip"],
+      "icon": "public/icons/logo.ico"
     }
   }
 }
