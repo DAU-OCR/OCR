@@ -119,47 +119,31 @@ def get_filtered_ocr(reader, image, resize):
     conf = max([c for (_, _, c) in result])
     return norm, round(conf, 2)
 
-def apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, hangul_dict):
-    results = [
-        {'text': t1, 'conf': c1, 'name': '모델1'},
-        {'text': t2, 'conf': c2, 'name': '모델2'},
-        {'text': t3, 'conf': c3, 'name': '모델3(CRNN)'}
-    ]
-
-    # 1. 정규식에 유효한 결과 필터링
-    valid_results = [r for r in results if is_valid_plate(r['text'])]
-
-    # 2. 유효한 결과가 있을 경우, 그 중에서 최상의 결과 선택
-    if len(valid_results) > 0:
-        # 2a. 한글사전 포함 여부 확인
-        for r in valid_results:
-            hangul_char = re.findall(r'[가-힣]', r['text'])
-            r['in_dict'] = hangul_char and hangul_char[0] in hangul_dict
-
-        dict_results = [r for r in valid_results if r['in_dict']]
-        
-        if len(dict_results) == 1:
-            return dict_results[0]['text'], f"정규식+사전({dict_results[0]['name']})"
-        
-        if len(dict_results) > 1:
-            # 사전을 통과한 결과가 여러 개면 신뢰도 가장 높은 것 선택
-            best = max(dict_results, key=lambda x: x['conf'])
-            return best['text'], f"정규식+사전+conf({best['name']})"
-
-        # 사전을 통과한 결과가 없으면, 유효한 결과 중 신뢰도 가장 높은 것 선택
-        best = max(valid_results, key=lambda x: x['conf'])
-        return best['text'], f"정규식+conf({best['name']})"
-
-    # 3. 유효한 결과가 하나도 없을 경우, 패치 시도
-    patch_pairs = [(t1, t2), (t1, t3), (t2, t3)]
-    for p1, p2 in patch_pairs:
-        patched = patch_hangul(p1, p2)
-        if patched and is_valid_plate(patched):
-            return patched, '패치'
-
-    # 4. 최종적으로 신뢰도가 가장 높은 결과를 선택
-    best = max(results, key=lambda x: x['conf'])
-    return best['text'], f"conf({best['name']})"
+def apply_plate_selection_logic(t1, c1, t2, c2, hangul_dict):
+    if t1 == t2 and t1:
+        return t1, '일치'
+    if is_valid_plate(t1) and not is_valid_plate(t2):
+        return t1, '정규식1'
+    if is_valid_plate(t2) and not is_valid_plate(t1):
+        return t2, '정규식2'
+    if is_valid_plate(t1) and is_valid_plate(t2):
+        h1, h2 = re.findall(r'[가-힣]', t1), re.findall(r'[가-힣]', t2)
+        in1, in2 = h1 and h1[0] in hangul_dict, h2 and h2[0] in hangul_dict
+        if in1 and not in2: return t1, '정규식+사전1'
+        if in2 and not in1: return t2, '정규식+사전2'
+        return (t1, '정규식+conf1') if c1 >= c2 else (t2, '정규식+conf2')
+    patched = patch_hangul(t1, t2)
+    if patched and is_valid_plate(patched):
+        return patched, '패치'
+    digits = re.sub(r'[^0-9]', '', t1)
+    if len(digits) == 7:
+        if digits[-5] == '4':
+            p = insert_hangul_fixed(digits, '나')
+            if is_valid_plate(p): return p, '보정(4-나)'
+        if digits[-5] == '7':
+            p = insert_hangul_fixed(digits, '가')
+            if is_valid_plate(p): return p, '보정(7-가)'
+    return (t1, 'conf1') if c1 >= c2 else (t2, 'conf2')
 
 def get_plate_corners(image, fname=None, save_debug=False, debug_dir=None):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -262,24 +246,6 @@ reader2 = easyocr.Reader(['en'], gpu=False,
                          user_network_directory=model_path,
                          recog_network='best_acc', download_enabled=False)
 
-# --- CRNN 모델 로딩 ---
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-crnn_model_path = os.path.join(BASE_DIR, 'CRNN_model', 'ocrBestModel_142.pth')
-
-# CRNN_model 폴더를 시스템 경로에 추가
-sys.path.insert(0, os.path.join(BASE_DIR, 'CRNN_model'))
-
-from preprocess import load_crnn_model, run_crnn_ocr
-from label_encoder import LabelEncoder
-
-label_encoder = LabelEncoder()
-charset = label_encoder.get_charset()
-num_classes = len(charset) + 1  # CTC blank 토큰을 위해 +1
-
-crnn_model = load_crnn_model(crnn_model_path, num_classes=num_classes, device=device)
-print(">>> 커스텀 CRNN 모델 로딩 완료.")
-# --- CRNN 모델 로딩 종료 ---
-
 MIN_AREA = 1400
 MIN_ASPECT_RATIO = 1.0
 resize1 = (100, 32)
@@ -376,10 +342,7 @@ def upload():
         # OCR 수행
         t1, c1 = get_filtered_ocr(reader1, plate_img, resize1)
         t2, c2 = get_filtered_ocr(reader2, plate_img, resize2)
-        t3, c3 = run_crnn_ocr(plate_img, crnn_model, label_encoder, device)
-        c3 = round(c3, 2)
-
-        selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, set(dict_map.values()))
+        selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, set(dict_map.values()))
         matched = is_valid_plate(selected)
 
         if not matched:
@@ -403,7 +366,6 @@ def upload():
             'visual': f'/uploads/visual/{vis_name}',
             'text1': t1, 'conf1': c1,
             'text2': t2, 'conf2': c2,
-            'text3': t3, 'conf3': c3,
             'plate': selected, 'reason': reason,
             'matched': matched
         })
@@ -420,37 +382,17 @@ def download_excel():
     if not data:
         return jsonify({'error': '데이터 없음'}), 400
 
-    excel_data = []
+    # matched가 False이면 결과를 "인식 실패"로 통일
     for r in data:
-        row_data = {}
         if not r.get('matched'):
-            row_data['Top1_Text'] = '인식 실패'
-            row_data['Top2_Text'] = '인식 실패'
-            row_data['plate'] = '인식 실패'
-        else:
-            # 'text3'가 없는 이전 기록과의 호환성을 위해 .get 사용
-            all_results = [
-                {'name': '모델1', 'text': r.get('text1'), 'conf': r.get('conf1', 0)},
-                {'name': '모델2', 'text': r.get('text2'), 'conf': r.get('conf2', 0)},
-                {'name': '모델3(CRNN)', 'text': r.get('text3'), 'conf': r.get('conf3', 0)}
-            ]
-            
-            # 신뢰도 순으로 정렬
-            sorted_results = sorted(all_results, key=lambda x: x['conf'], reverse=True)
-            
-            top1 = sorted_results[0]
-            top2 = sorted_results[1]
-
-            row_data['Top1_Text'] = top1['text']
-            row_data['Top2_Text'] = top2['text']
-            row_data['plate'] = r.get('plate')
-        
-        excel_data.append(row_data)
+            r['text1'] = '인식 실패'
+            r['text2'] = '인식 실패'
+            r['plate'] = '인식 실패'
 
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine='openpyxl') as writer:
-        df = pd.DataFrame(excel_data)[['Top1_Text', 'Top2_Text', 'plate']]
-        df.columns = ['1순위 모델 결과', '2순위 모델 결과', '선택된 결과']
+        df = pd.DataFrame(data)[['text1', 'text2', 'plate']]
+        df.columns = ['모델1 결과', '모델2 결과', '선택된 결과']
         df.to_excel(writer, index=False, sheet_name='결과')
         ws = writer.sheets['결과']
 
@@ -490,9 +432,10 @@ def download_excel():
             except Exception as e:
                 print(f"[이미지 삽입 실패] {r.get('image', '')} → {e}")
 
+
+
         ws.column_dimensions['A'].width = px_to_col_width(TARGET_WIDTH)
 
-        # 컬럼 너비 조정 (총 4개 컬럼: 이미지, 1순위, 2순위, 최종)
         for col in range(2, 5):
             ws.column_dimensions[get_column_letter(col)].width = 25
 
