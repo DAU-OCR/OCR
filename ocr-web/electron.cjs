@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, MenuItem } = require('electron');
 const path = require('path');
-const { spawn, exec } = require('child_process');
+const { spawn, exec, execSync } = require('child_process');
+const fs = require('fs');
 
 let pythonProcess = null;
 
@@ -17,20 +18,12 @@ function getBackendPath() {
 // Function to start the Python backend
 function startPythonBackend() {
   const serverExecutable = getBackendPath();
-
-  console.log(`Attempting to start backend from: ${serverExecutable}`);
+  const serverDir = path.dirname(serverExecutable);
 
   pythonProcess = spawn(serverExecutable, [], {
-    stdio: 'inherit', // Pipe stdout/stderr to the main Electron process console for debugging
-    windowsHide: true
-  });
-
-  pythonProcess.on('error', (err) => {
-    console.error('Failed to start Python backend:', err);
-  });
-
-  pythonProcess.on('close', (code) => {
-    console.log(`Python backend exited with code ${code}`);
+    windowsHide: true,
+    cwd: serverDir,
+    stdio: 'ignore'
   });
 }
 
@@ -85,16 +78,13 @@ function startPythonBackend() {
   // Make sure to kill the backend process when the app quits.
 app.on('will-quit', () => {
   if (pythonProcess) {
-    console.log('Killing Python backend...');
     // Windows에서 강제 종료를 위해 taskkill 사용
     if (process.platform === 'win32') {
-      exec(`taskkill /pid ${pythonProcess.pid} /f /t`, (err) => {
-        if (err) {
-          console.error('Failed to forcefully kill Python backend:', err);
-        } else {
-          console.log('Python backend forcefully killed.');
-        }
-      });
+      try {
+        execSync(`taskkill /pid ${pythonProcess.pid} /f /t`);
+      } catch (err) {
+        // Ignore errors, we are quitting anyway
+      }
     } else {
       pythonProcess.kill();
     }

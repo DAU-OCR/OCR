@@ -7,8 +7,35 @@ import './ResultsPage.css';
 export default function ResultsPage() {
   const [rows, setRows] = useState([]);
   const [downloading, setDownloading] = useState(false);
-  // selectedImage 대신 전체 행 데이터를 저장하여 다른 정보도 접근할 수 있도록 변경
   const [selectedRow, setSelectedRow] = useState(null); 
+  const [focusedIndex, setFocusedIndex] = useState(-1); // For keyboard navigation
+  const inputRefs = React.useRef([]); // To focus input elements
+
+  // Keyboard navigation logic
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedIndex(prev => Math.min(prev + 1, rows.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedIndex(prev => Math.max(prev - 1, 0));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [rows.length]);
+
+  // Effect to focus the input when focusedIndex changes
+  React.useEffect(() => {
+    if (focusedIndex !== -1 && inputRefs.current[focusedIndex]) {
+      inputRefs.current[focusedIndex].focus();
+      inputRefs.current[focusedIndex].select();
+    }
+  }, [focusedIndex]); 
 
   useEffect(() => {
     axios.get('http://localhost:5000/results')
@@ -129,6 +156,44 @@ export default function ResultsPage() {
     }
   };
 
+  const handleJsonDownload = async () => {
+    setDownloading(true);
+    try {
+      const res = await axios.get('http://localhost:5000/download-json', { responseType: 'blob' });
+      const blob = new Blob([res.data], {
+        type: 'application/json;charset=utf-8',
+      });
+
+      const contentDisposition = res.headers['content-disposition'];
+      let filename = `ocr_results_${new Date().toISOString().slice(0,10)}.json`;
+      if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+          if (filenameMatch && filenameMatch.length > 1) {
+              filename = filenameMatch[1];
+          }
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (e) {
+      if (e.response?.status === 400) {
+        alert('내보낼 데이터가 없습니다.');
+        return;
+      }
+      console.error('JSON Download Error:', e);
+      alert('JSON 다운로드 중 오류가 발생했습니다.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <motion.div
       className="results-page"
@@ -152,25 +217,35 @@ export default function ResultsPage() {
             <tbody>
               {rows.length > 0 ? (
                 rows.map((r, i) => (
-                  <tr key={i}>
+                  <tr
+                    key={i}
+                    className={i === focusedIndex ? 'focused-row' : ''}
+                    onClick={() => setFocusedIndex(i)}
+                  >
                     <td>{i + 1}</td>
                     <td>
                       <img
                         src={`http://localhost:5000${r.visual || r.image}`}
                         alt={`차량 ${i + 1}`}
                         className="row-image"
-                        // 클릭 시 전체 행 객체를 전달하도록 변경
-                        onClick={() => setSelectedRow(r)}
+                        onDoubleClick={() => setSelectedRow(r)} // Double click to open popup
                       />
                     </td>
                     <td>{r.text1 || '-'}</td>
                     <td>{r.text2 || '-'}</td>
                     <td>
                       <input
+                        ref={el => (inputRefs.current[i] = el)}
                         type="text"
                         className="plate-input"
                         value={r.plate} // '인식 실패'일 때 '인식 실패' 표시, 사용자 입력 유지
                         onChange={e => handlePlateChange(i, e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            setFocusedIndex(prev => Math.min(prev + 1, rows.length - 1));
+                          }
+                        }}
                       />
                     </td>
                   </tr>
@@ -191,6 +266,9 @@ export default function ResultsPage() {
                 <span>엑셀 파일 다운로드</span>
               </>
             )}
+          </button>
+          <button className="download-button" onClick={handleJsonDownload} disabled={downloading}>
+            {downloading ? '다운로드 중…' : 'JSON으로 내보내기'}
           </button>
           <button className="reset-button" onClick={handleReset}>
             초기화
