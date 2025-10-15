@@ -236,3 +236,7 @@
   text-align: center;
   box-sizing: border-box;
 }
+
+.results-table tr.focused-row {
+  background-color: #e7f3ff; /* Light blue for focus */
+}

@@ -1,6 +1,5 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import re
 import io
 import cv2
@@ -19,10 +18,6 @@ from openpyxl.drawing.image import Image as XLImage
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 import warnings
-import traceback
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'yolov5'))
-from utils.general import non_max_suppression, scale_boxes
-from utils.augmentations import letterbox
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -36,6 +31,7 @@ def resource_path(relative_path):
 # 환경 설정
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 warnings.filterwarnings("ignore", category=FutureWarning)
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
@@ -73,22 +69,6 @@ dict_map = {
     'leo': '러', 'lu': '루', 'so': '소', 'da': '다', 'lo': '로', 'nu': '누', 'o': '오', 'ga': '가'
 }
 dict_sorted = sorted(dict_map.items(), key=lambda x: len(x[0]), reverse=True)
-
-# 번호판에 사용되는 모든 한글 문자 집합
-VALID_HANGUL_CHARS = {
-    # Private vehicles
-    '가', '나', '다', '라', '마', '거', '너', '더', '러', '머', '버', '서', '어', '저',
-    '고', '노', '도', '로', '모', '보', '소', '오', '조', '구', '누', '두', '루', '무',
-    '부', '수', '우', '주',
-    # Rental cars
-    '허', '하', '호',
-    # Commercial vehicles (Taxis, Buses)
-    '바', '사', '아', '자',
-    # Delivery
-    '배',
-    # Military (optional)
-    '육', '해', '공', '국', '합'
-}
 
 # OCR 유틸 함수
 def roman_to_korean(text):
@@ -267,9 +247,8 @@ def warp_perspective(image, corners, output_size=(200, 60)):
 
 
 # 모델 로딩
-yolo_model = torch.hub.load(os.path.join(BASE_DIR, 'yolov5'), 'custom',
-                            path=resource_path(os.path.join('custom_weights', 'best.pt')),
-                            source='local',
+yolo_model = torch.hub.load('ultralytics/yolov5', 'custom',
+                            path=os.path.join(BASE_DIR, 'custom_weights', 'best.pt'),
                             device='cpu', # 이 부분을 추가합니다.
                             verbose=False)
 
@@ -284,11 +263,11 @@ reader2 = easyocr.Reader(['en'], gpu=False,
                          recog_network='best_acc', download_enabled=False)
 
 # --- CRNN 모델 로딩 ---
-device = torch.device('cpu')
-crnn_model_path = resource_path(os.path.join('CRNN_model', 'ocrBestModel_142.pth'))
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+crnn_model_path = os.path.join(BASE_DIR, 'CRNN_model', 'ocrBestModel_142.pth')
 
 # CRNN_model 폴더를 시스템 경로에 추가
-sys.path.insert(0, resource_path('CRNN_model'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'CRNN_model'))
 
 from preprocess import load_crnn_model, run_crnn_ocr
 from label_encoder import LabelEncoder
@@ -298,6 +277,7 @@ charset = label_encoder.get_charset()
 num_classes = len(charset) + 1  # CTC blank 토큰을 위해 +1
 
 crnn_model = load_crnn_model(crnn_model_path, num_classes=num_classes, device=device)
+print(">>> 커스텀 CRNN 모델 로딩 완료.")
 # --- CRNN 모델 로딩 종료 ---
 
 MIN_AREA = 1400
@@ -305,166 +285,131 @@ MIN_ASPECT_RATIO = 1.0
 resize1 = (100, 32)
 resize2 = (200, 60)
 records = []
+
 def detect_plate(image):
-    # Preprocessing
-    img0 = image.copy()
-    img, ratio, (dw, dh) = letterbox(img0, 640, stride=32, auto=True)
-    img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
-    img = np.ascontiguousarray(img)
-
-    img = torch.from_numpy(img).to(device)
-    img = img.float()
-    img /= 255.0
-    if len(img.shape) == 3:
-        img = img[None]
-
-    # Inference
-    pred = yolo_model(img, augment=False, visualize=False)
-    if isinstance(pred, (list, tuple)) and len(pred) in (2, 3): # yolov5 returns a tuple (pred, feature_maps) or (pred, protos, feature_maps)
-        pred = pred[0]
-
-    # NMS
-    pred = non_max_suppression(pred, 0.25, 0.45, classes=None, agnostic=False, max_det=1000)
-
-    detections = []
-    for i, det in enumerate(pred):  # per image
-        if len(det):
-            # Rescale boxes from img_size to im0 size
-            det[:, :4] = scale_boxes(img.shape[2:], det[:, :4], img0.shape).round()
-            detections = det.cpu().numpy()
-
-    if len(detections) == 0:
-        return None
-
+    detections = yolo_model(image).xyxy[0].cpu().numpy()
     filtered = []
     for *xyxy, conf, cls in detections.tolist():
         x1, y1, x2, y2 = map(int, xyxy)
         area = (x2 - x1) * (y2 - y1)
-        ratio_bbox = (x2 - x1) / (y2 - y1 + 1e-5)
-        if area > MIN_AREA and ratio_bbox > MIN_ASPECT_RATIO:
+        ratio = (x2 - x1) / (y2 - y1 + 1e-5)
+        if area > MIN_AREA and ratio > MIN_ASPECT_RATIO:
             filtered.append((area, (x1, y1, x2, y2)))
-
     if not filtered:
         return None
-
     _, (x1, y1, x2, y2) = max(filtered)
     return image[y1:y2, x1:x2], (x1, y1, x2, y2)
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    try:
-        files = request.files.getlist('images') or request.files.getlist('image')
-        if not files:
-            return jsonify({'error': '파일이 없습니다'}), 400
+    files = request.files.getlist('images') or request.files.getlist('image')
+    if not files:
+        return jsonify({'error': '파일이 없습니다'}), 400
 
-        for f in files:
-            fname = secure_filename(f.filename)
-            path = os.path.join(UPLOAD_FOLDER, fname)
-            f.save(path)
-            image = cv2.imread(path)
-            result = {
-                'image': f'/uploads/{fname}',
-                'timestamp': datetime.now().isoformat(),
-                'matched': False
-            }
+    for f in files:
+        fname = secure_filename(f.filename)
+        path = os.path.join(UPLOAD_FOLDER, fname)
+        f.save(path)
+        image = cv2.imread(path)
+        result = {
+            'image': f'/uploads/{fname}',
+            'matched': False
+        }
 
-            # 디버그 폴더 생성
-            debug_subdir = os.path.join(UPLOAD_FOLDER, 'debug', os.path.splitext(fname)[0])
-            os.makedirs(debug_subdir, exist_ok=True)
+        # 디버그 폴더 생성
+        debug_subdir = os.path.join(UPLOAD_FOLDER, 'debug', os.path.splitext(fname)[0])
+        os.makedirs(debug_subdir, exist_ok=True)
 
-            detected = detect_plate(image)
-            if not detected:
-                records.append(result)
-                continue
-
-            plate_img, (x1, y1, x2, y2) = detected
-
-            # 디버그: YOLO 검출 영역 저장
-            cv2.imwrite(os.path.join(debug_subdir, '1_detected_yolo.png'), plate_img)
-
-            # 패딩 추가
-            pad = 20
-            x1 = max(x1 - pad, 0)
-            y1 = max(y1 - pad, 0)
-            x2 = min(x2 + pad, image.shape[1])
-            y2 = min(y2 + pad, image.shape[0])
-            plate_img = image[y1:y2, x1:x2]
-
-            # 디버그: 패딩 후 이미지 저장
-            cv2.imwrite(os.path.join(debug_subdir, '2_padded.png'), plate_img)
-
-            # 디버그: 보정 전 이미지 저장
-            cv2.imwrite(os.path.join(debug_subdir, '3_before_correction.png'), plate_img)
-
-            # 보정 시도 1
-            # corners 추출 시 디버그 인자 추가
-            corners = get_plate_corners(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
-            if corners is None:
-                corners = get_plate_corners_threshold(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
-
-
-            if corners is not None:
-                # 디버그: 검출된 코너 시각화
-                corner_img = plate_img.copy()
-                cv2.polylines(corner_img, [np.int32(corners)], True, (0, 255, 0), 2)
-                cv2.imwrite(os.path.join(debug_subdir, '4_detected_corners.png'), corner_img)
-
-                # 보정 수행
-                warped_img = warp_perspective(plate_img, corners)
-
-                # 디버그: 보정된 결과 이미지 저장
-                cv2.imwrite(os.path.join(debug_subdir, '5_corrected_warped.png'), warped_img)
-
-                # 보정된 이미지로 교체
-                plate_img = warped_img
-
-            # OCR 리사이즈 후 입력 저장
-            t1_input = cv2.resize(plate_img, resize1)
-            t2_input = cv2.resize(plate_img, resize2)
-            cv2.imwrite(os.path.join(debug_subdir, '6_ocr_model1_input.png'), t1_input)
-            cv2.imwrite(os.path.join(debug_subdir, '7_ocr_model2_input.png'), t2_input)
-
-            # OCR 수행
-            t1, c1 = get_filtered_ocr(reader1, plate_img, resize1)
-            t2, c2 = get_filtered_ocr(reader2, plate_img, resize2)
-            t3, c3 = run_crnn_ocr(plate_img, crnn_model, label_encoder, device)
-            c3 = round(c3, 2)
-
-            selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, VALID_HANGUL_CHARS)
-            matched = is_valid_plate(selected)
-
-            if not matched:
-                selected = '인식 실패'
-
-            crop_name = f"crop_{fname}"
-            vis_name = f"vis_{fname}"
-            cv2.imwrite(os.path.join(CROP_FOLDER, crop_name), plate_img)
-            PILImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)).save(os.path.join(VISUAL_FOLDER, vis_name))
-
-            # 개발자용 디버깅 이미지 저장: YOLO 박스 포함된 원본 이미지
-            DEV_VISUAL_FOLDER = os.path.join(UPLOAD_FOLDER, 'dev_visual')
-            os.makedirs(DEV_VISUAL_FOLDER, exist_ok=True)
-            dev_vis_path = os.path.join(DEV_VISUAL_FOLDER, f'dev_{fname}')
-            dev_img = image.copy()
-            cv2.rectangle(dev_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            PILImage.fromarray(cv2.cvtColor(dev_img, cv2.COLOR_BGR2RGB)).save(dev_vis_path)
-
-            result.update({
-                'crop': f'/uploads/cropped/{crop_name}',
-                'visual': f'/uploads/visual/{vis_name}',
-                'text1': t1, 'conf1': c1,
-                'text2': t2, 'conf2': c2,
-                'text3': t3, 'conf3': c3,
-                'plate': selected, 'reason': reason,
-                'matched': matched
-            })
+        detected = detect_plate(image)
+        if not detected:
             records.append(result)
+            continue
 
-        return jsonify({'status': 'ok'}), 200
-    except Exception as e:
-        # Return a 500 error
-        return jsonify({'error': 'An internal error occurred', 'details': str(e)}), 500
+        plate_img, (x1, y1, x2, y2) = detected
+
+        # 디버그: YOLO 검출 영역 저장
+        cv2.imwrite(os.path.join(debug_subdir, '1_detected_yolo.png'), plate_img)
+
+        # 패딩 추가
+        pad = 20
+        x1 = max(x1 - pad, 0)
+        y1 = max(y1 - pad, 0)
+        x2 = min(x2 + pad, image.shape[1])
+        y2 = min(y2 + pad, image.shape[0])
+        plate_img = image[y1:y2, x1:x2]
+
+        # 디버그: 패딩 후 이미지 저장
+        cv2.imwrite(os.path.join(debug_subdir, '2_padded.png'), plate_img)
+
+        # 디버그: 보정 전 이미지 저장
+        cv2.imwrite(os.path.join(debug_subdir, '3_before_correction.png'), plate_img)
+
+        # 보정 시도 1
+        # corners 추출 시 디버그 인자 추가
+        corners = get_plate_corners(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
+        if corners is None:
+            corners = get_plate_corners_threshold(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
+
+
+        if corners is not None:
+            # 디버그: 검출된 코너 시각화
+            corner_img = plate_img.copy()
+            cv2.polylines(corner_img, [np.int32(corners)], True, (0, 255, 0), 2)
+            cv2.imwrite(os.path.join(debug_subdir, '4_detected_corners.png'), corner_img)
+
+            # 보정 수행
+            warped_img = warp_perspective(plate_img, corners)
+
+            # 디버그: 보정된 결과 이미지 저장
+            cv2.imwrite(os.path.join(debug_subdir, '5_corrected_warped.png'), warped_img)
+
+            # 보정된 이미지로 교체
+            plate_img = warped_img
+
+        # OCR 리사이즈 후 입력 저장
+        t1_input = cv2.resize(plate_img, resize1)
+        t2_input = cv2.resize(plate_img, resize2)
+        cv2.imwrite(os.path.join(debug_subdir, '6_ocr_model1_input.png'), t1_input)
+        cv2.imwrite(os.path.join(debug_subdir, '7_ocr_model2_input.png'), t2_input)
+
+        # OCR 수행
+        t1, c1 = get_filtered_ocr(reader1, plate_img, resize1)
+        t2, c2 = get_filtered_ocr(reader2, plate_img, resize2)
+        t3, c3 = run_crnn_ocr(plate_img, crnn_model, label_encoder, device)
+        c3 = round(c3, 2)
+
+        selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, set(dict_map.values()))
+        matched = is_valid_plate(selected)
+
+        if not matched:
+            selected = '인식 실패'
+
+        crop_name = f"crop_{fname}"
+        vis_name = f"vis_{fname}"
+        cv2.imwrite(os.path.join(CROP_FOLDER, crop_name), plate_img)
+        PILImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)).save(os.path.join(VISUAL_FOLDER, vis_name))
+
+        # 개발자용 디버깅 이미지 저장: YOLO 박스 포함된 원본 이미지
+        DEV_VISUAL_FOLDER = os.path.join(UPLOAD_FOLDER, 'dev_visual')
+        os.makedirs(DEV_VISUAL_FOLDER, exist_ok=True)
+        dev_vis_path = os.path.join(DEV_VISUAL_FOLDER, f'dev_{fname}')
+        dev_img = image.copy()
+        cv2.rectangle(dev_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        PILImage.fromarray(cv2.cvtColor(dev_img, cv2.COLOR_BGR2RGB)).save(dev_vis_path)
+
+        result.update({
+            'crop': f'/uploads/cropped/{crop_name}',
+            'visual': f'/uploads/visual/{vis_name}',
+            'text1': t1, 'conf1': c1,
+            'text2': t2, 'conf2': c2,
+            'text3': t3, 'conf3': c3,
+            'plate': selected, 'reason': reason,
+            'matched': matched
+        })
+        records.append(result)
+
+    return jsonify({'status': 'ok'}), 200
 
 
 @app.route('/download', methods=['GET'])
@@ -586,58 +531,6 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@app.route('/download-json', methods=['GET'])
-def download_json():
-    data = records.copy()
-    if not data:
-        return jsonify({'error': '데이터 없음'}), 400
-
-    output_data = []
-    for r in data:
-        selected_conf = 0
-        accuracy = "N/A"
-        
-        reason_text = r.get('reason', '')
-        model_match = re.search(r'\((.*?)\)', reason_text)
-        selected_model_name = model_match.group(1) if model_match else ''
-
-        if selected_model_name == '모델1':
-            selected_conf = r.get('conf1', 0)
-        elif selected_model_name == '모델2':
-            selected_conf = r.get('conf2', 0)
-        elif selected_model_name == '모델3(CRNN)':
-            selected_conf = r.get('conf3', 0)
-
-        if '패치' in reason_text:
-            accuracy = "N/A (Patched)"
-        elif selected_conf > 0:
-            accuracy = f"{selected_conf * 100:.2f}"
-        
-        error_message = ""
-        if not r.get('matched') or r.get('plate') == '인식 실패':
-            error_message = reason_text or '인식 실패'
-
-        json_record = {
-            '파일명': os.path.basename(r.get('image', '')),
-            '처리일시': r.get('timestamp'),
-            '모델별 결과': [
-                {'모델명': '모델1 (EasyOCR-ko)', '결과': r.get('text1', ''), '신뢰도': r.get('conf1', 0)},
-                {'모델명': '모델2 (EasyOCR-en)', '결과': r.get('text2', ''), '신뢰도': r.get('conf2', 0)},
-                {'모델명': '모델3 (CRNN)', '결과': r.get('text3', ''), '신뢰도': r.get('conf3', 0)},
-            ],
-            '최종선택결과': r.get('plate'),
-            '정확도(%)': accuracy,
-            '오류메시지': error_message
-        }
-        output_data.append(json_record)
-
-    response = jsonify(output_data)
-    today = datetime.now().strftime('%Y-%m-%d')
-    filename = f"ocr_results_{today}.json"
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
-
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
