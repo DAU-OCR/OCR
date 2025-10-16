@@ -13,13 +13,14 @@ from datetime import datetime
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-from PIL import Image as PILImage, ImageDraw, ImageFont
+from PIL import Image as PILImage, ImageDraw, ImageFont, ImageOps
 from openpyxl import Workbook, load_workbook
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 import warnings
 import traceback
+from collections import Counter
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'yolov5'))
 from utils.general import non_max_suppression, scale_boxes
 from utils.augmentations import letterbox
@@ -146,40 +147,67 @@ def apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, hangul_dict):
         {'text': t3, 'conf': c3, 'name': '모델3(CRNN)'}
     ]
 
-    # 1. 정규식에 유효한 결과 필터링
-    valid_results = [r for r in results if is_valid_plate(r['text'])]
+    # --- 1단계: 다수결 투표 ---
+    # 정규식과 한글 사전을 모두 통과한 결과만 투표 자격 부여
+    vote_candidates = []
+    for r in results:
+        if is_valid_plate(r['text']):
+            hangul_char = re.findall(r'[가-힣]', r['text'])
+            if hangul_char and hangul_char[0] in hangul_dict:
+                vote_candidates.append(r['text'])
+    
+    if len(vote_candidates) >= 2:
+        vote_counts = Counter(vote_candidates)
+        most_common = vote_counts.most_common(1)[0]
+        if most_common[1] >= 2: # 2개 이상 동의
+            return most_common[0], f"다수결({most_common[1]}표)"
 
-    # 2. 유효한 결과가 있을 경우, 그 중에서 최상의 결과 선택
-    if len(valid_results) > 0:
-        # 2a. 한글사전 포함 여부 확인
+    # --- 2단계: 모델1 우선 규칙 ---
+    is_t1_valid = is_valid_plate(t1)
+    if is_t1_valid:
+        hangul_char = re.findall(r'[가-힣]', t1)
+        if hangul_char and hangul_char[0] in hangul_dict:
+            return t1, "모델1우선"
+
+    # --- 3단계: 가중치 적용 비교 ---
+    # 2단계에서 모델1이 채택되지 않았으므로, 모델1을 제외한 나머지로 비교
+    remaining_results = [r for r in results if r['name'] != '모델1']
+    valid_results = [r for r in remaining_results if is_valid_plate(r['text'])]
+    
+    if valid_results:
         for r in valid_results:
             hangul_char = re.findall(r'[가-힣]', r['text'])
             r['in_dict'] = hangul_char and hangul_char[0] in hangul_dict
 
         dict_results = [r for r in valid_results if r['in_dict']]
-        
-        if len(dict_results) == 1:
-            return dict_results[0]['text'], f"정규식+사전({dict_results[0]['name']})"
-        
-        if len(dict_results) > 1:
-            # 사전을 통과한 결과가 여러 개면 신뢰도 가장 높은 것 선택
-            best = max(dict_results, key=lambda x: x['conf'])
-            return best['text'], f"정규식+사전+conf({best['name']})"
 
-        # 사전을 통과한 결과가 없으면, 유효한 결과 중 신뢰도 가장 높은 것 선택
-        best = max(valid_results, key=lambda x: x['conf'])
-        return best['text'], f"정규식+conf({best['name']})"
+        def get_adjusted_conf(r):
+            if r['name'] == '모델3(CRNN)':
+                return r['conf'] * 0.9
+            return r['conf']
 
-    # 3. 유효한 결과가 하나도 없을 경우, 패치 시도
+        if dict_results:
+            best = max(dict_results, key=get_adjusted_conf)
+            return best['text'], f"사전+가중치({best['name']})"
+        else:
+            best = max(valid_results, key=get_adjusted_conf)
+            return best['text'], f"정규식+가중치({best['name']})"
+
+    # --- 4단계: 패치 및 최종 선택 ---
     patch_pairs = [(t1, t2), (t1, t3), (t2, t3)]
     for p1, p2 in patch_pairs:
         patched = patch_hangul(p1, p2)
         if patched and is_valid_plate(patched):
-            return patched, '패치'
+            hangul_char = re.findall(r'[가-힣]', patched)
+            if hangul_char and hangul_char[0] in hangul_dict:
+                return patched, '패치'
 
-    # 4. 최종적으로 신뢰도가 가장 높은 결과를 선택
-    best = max(results, key=lambda x: x['conf'])
-    return best['text'], f"conf({best['name']})"
+    def get_adjusted_conf_final(r):
+        if r['name'] == '모델3(CRNN)':
+            return r['conf'] * 0.9
+        return r['conf']
+    best = max(results, key=get_adjusted_conf_final)
+    return best['text'], f"conf+가중치({best['name']})"
 
 def get_plate_corners(image, fname=None, save_debug=False, debug_dir=None):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -477,33 +505,35 @@ def download_excel():
 
     excel_data = []
     for r in data:
-        row_data = {}
-        if not r.get('matched'):
-            row_data['Top1_Text'] = '인식 실패'
-            row_data['Top2_Text'] = '인식 실패'
-            row_data['plate'] = '인식 실패'
-        else:
-            # 'text3'가 없는 이전 기록과의 호환성을 위해 .get 사용
-            all_results = [
-                {'name': '모델1', 'text': r.get('text1'), 'conf': r.get('conf1', 0)},
-                {'name': '모델2', 'text': r.get('text2'), 'conf': r.get('conf2', 0)},
-                {'name': '모델3(CRNN)', 'text': r.get('text3'), 'conf': r.get('conf3', 0)}
-            ]
-            
-            # 신뢰도 순으로 정렬
-            sorted_results = sorted(all_results, key=lambda x: x['conf'], reverse=True)
-            
-            top1 = sorted_results[0]
-            top2 = sorted_results[1]
-
-            row_data['Top1_Text'] = top1['text']
-            row_data['Top2_Text'] = top2['text']
-            row_data['plate'] = r.get('plate')
+        # 모델 결과를 신뢰도 순으로 정렬하여 엑셀에 넣을 데이터를 준비
+        all_results = [
+            {'name': '모델1', 'text': r.get('text1', ''), 'conf': r.get('conf1', 0)},
+            {'name': '모델2', 'text': r.get('text2', ''), 'conf': r.get('conf2', 0)},
+            {'name': '모델3(CRNN)', 'text': r.get('text3', ''), 'conf': r.get('conf3', 0)}
+        ]
+        sorted_results = sorted(all_results, key=lambda x: x['conf'], reverse=True)
         
+        # 실패했을 경우 텍스트를 '인식 실패'로 통일
+        plate_text = r.get('plate', 'N/A')
+        if not r.get('matched') or plate_text == '인식 실패':
+            top1_text = '인식 실패'
+            top2_text = '인식 실패'
+            plate_text = '인식 실패'
+        else:
+            top1_text = sorted_results[0]['text']
+            top2_text = sorted_results[1]['text']
+        
+        row_data = {
+            'Top1_Text': top1_text,
+            'Top2_Text': top2_text,
+            'plate': plate_text,
+            'image_path': r['image'] # 이미지 경로 추가 (엑셀 삽입용)
+        }
         excel_data.append(row_data)
 
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine='openpyxl') as writer:
+        # DataFrame 생성 시 이미지 경로를 제외한 컬럼만 사용
         df = pd.DataFrame(excel_data)[['Top1_Text', 'Top2_Text', 'plate']]
         df.columns = ['1순위 모델 결과', '2순위 모델 결과', '선택된 결과']
         df.to_excel(writer, index=False, sheet_name='결과')
@@ -513,36 +543,44 @@ def download_excel():
         ws.insert_cols(1)
         ws.cell(row=1, column=1).value = '차량 이미지'
 
-        # 16:9 비율 크기 설정
-        TARGET_WIDTH = 150
-        TARGET_HEIGHT = 267
+        TARGET_WIDTH = 450 # 가로 너비 기준을 450px로 설정 (원하는 크기로 조정)
 
         def px_to_col_width(px): return px * 0.14
         def px_to_row_height(px): return px * 0.75
 
+        # 엑셀 데이터 대신 원본 records를 사용하여 이미지 경로에 접근
         for idx, r in enumerate(data, start=2):
             try:
-                # 원본 업로드된 이미지 경로로 변경
+                # 이미지 경로는 원본 'image' 필드를 사용
                 img_path = os.path.join(BASE_DIR, r['image'].lstrip('/'))
                 pil = PILImage.open(img_path)
 
-                # (선택사항) 색상 모드 변환
-                if pil.mode != 'RGB':
-                    pil = pil.convert('RGB')
+                # 이미지 회전 문제 해결 로직 적용
+                # EXIF 메타데이터 기반으로 이미지 자동 회전 보정
+                pil = ImageOps.exif_transpose(pil)
+                
+                orig_width, orig_height = pil.size
 
-                # 원본 해상도 유지, 압축 없음
+                # 비율 유지한 세로 크기 계산
+                scale = TARGET_WIDTH / orig_width
+                resized_height = int(orig_height * scale)
+
+                # 이미지 리사이즈 (PIL.LANCZOS는 고품질 리사이즈 필터)
+                resized_img = pil.resize((TARGET_WIDTH, resized_height), PILImage.LANCZOS)
+                
                 img_bytes = io.BytesIO()
-                pil.save(img_bytes, format='PNG')
+                resized_img.save(img_bytes, format='PNG')
                 img_bytes.seek(0)
 
                 xl_img = XLImage(img_bytes)
                 xl_img.width = TARGET_WIDTH
-                xl_img.height = TARGET_HEIGHT
+                xl_img.height = resized_height
 
                 ws.add_image(xl_img, f'A{idx}')
-                ws.row_dimensions[idx].height = px_to_row_height(TARGET_HEIGHT)
+                ws.row_dimensions[idx].height = px_to_row_height(resized_height)
 
             except Exception as e:
+                # 오류 발생 시 이미지 셀 건너뛰기
                 print(f"[이미지 삽입 실패] {r.get('image', '')} → {e}")
 
         ws.column_dimensions['A'].width = px_to_col_width(TARGET_WIDTH)
@@ -555,7 +593,7 @@ def download_excel():
     today = datetime.now().strftime('%Y-%m-%d')
     fname = secure_filename(request.args.get('filename') or f"{today}_plates") + '.xlsx'
     return send_file(buf, as_attachment=True, download_name=fname,
-                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 @app.route('/results')

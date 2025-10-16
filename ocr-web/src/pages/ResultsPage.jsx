@@ -37,6 +37,35 @@ export default function ResultsPage() {
     }
   }, [focusedIndex]); 
 
+  // 키보드로 팝업 내 이미지 네비게이션
+  React.useEffect(() => {
+    if (!selectedRow) return;
+
+    const handlePopupKeyDown = (e) => {
+      const currentIndex = rows.findIndex(r => r.image === selectedRow.image);
+      if (currentIndex === -1) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < rows.length) {
+          setSelectedRow(rows[nextIndex]);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prevIndex = currentIndex - 1;
+        if (prevIndex >= 0) {
+          setSelectedRow(rows[prevIndex]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handlePopupKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handlePopupKeyDown);
+    };
+  }, [selectedRow, rows]);
+
   useEffect(() => {
     axios.get('http://localhost:5000/results')
       .then(res => {
