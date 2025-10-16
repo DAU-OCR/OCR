@@ -347,7 +347,7 @@ def detect_plate(image):
         img = img[None]
 
     # Inference
-    pred = yolo_model(img, augment=False, visualize=False)
+    pred = yolo_model(img, augment=False)
     if isinstance(pred, (list, tuple)) and len(pred) in (2, 3): # yolov5 returns a tuple (pred, feature_maps) or (pred, protos, feature_maps)
         pred = pred[0]
 

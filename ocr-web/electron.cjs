@@ -22,8 +22,20 @@ function startPythonBackend() {
 
   pythonProcess = spawn(serverExecutable, [], {
     windowsHide: true,
-    cwd: serverDir,
-    stdio: 'ignore'
+    cwd: serverDir
+    // stdio: 'ignore' // Remove this to capture output
+  });
+
+  pythonProcess.stdout.on('data', (data) => {
+    console.log(`Python stdout: ${data}`);
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python stderr: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
   });
 }
 
