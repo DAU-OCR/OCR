@@ -42,7 +42,7 @@ except Exception:
 block_cipher = None
 
 a = Analysis(
-    ['app.py'],
+    ['app_v2.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -65,7 +65,7 @@ exe = EXE(
     a.binaries,
     a.zipfiles,
     a.datas,
-    name='ocr_server',
+    name='ocr_server_v2',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -2,11 +2,29 @@
 import os
 from PyInstaller.utils.hooks import collect_all, copy_metadata
 
-datas = [('custom_weights', 'custom_weights'), ('custom_weights_easyOCR', 'custom_weights_easyOCR'), ('yolov5', 'yolov5'), ('CRNN_model', 'CRNN_model')] + copy_metadata('torchvision')
+# ---- Collect all resources for critical libs (avoids "Numpy is not available") ----
+pkgs = ['numpy', 'torch', 'torchvision', 'easyocr', 'cv2', 'ultralytics', 'seaborn']
+
+datas = []
 binaries = []
-hiddenimports = [
-    'flask_cors', 'easyocr', 'logging.config', 'gitpython', 'matplotlib', 'psutil', 'yaml', 'requests', 'scipy', 'thop', 'tqdm', 'tensorboard', 'wandb', 'seaborn', 'pandas', 'sklearn',
-    # Manually add the required torch._dynamo.polyfills modules
+hiddenimports = []
+
+for pkg in pkgs:
+    try:
+        d, b, h = collect_all(pkg)
+        datas += d
+        binaries += b
+        hiddenimports += h
+    except Exception:
+        pass  # package may not be installed; skip
+
+# If you have local resource folders, include them here (existence optional).
+for p in ['custom_weights', 'custom_weights_easyOCR', 'CRNN_model', 'yolov5']:
+    if os.path.exists(p):
+        datas.append((p, p))
+
+# Some torch dynamo polyfills need explicit inclusion in some environments
+hiddenimports += [
     'torch._dynamo.polyfills.fx',
     'torch._dynamo.polyfills.tensor',
     'torch._dynamo.polyfills.math',
@@ -14,9 +32,14 @@ hiddenimports = [
     'torch._dynamo.polyfills.builtins',
     'torch._dynamo.polyfills.operator',
 ]
-tmp_ret = collect_all('ultralytics')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
+# Optional: metadata (if needed for torchvision/others)
+try:
+    datas += copy_metadata('torchvision')
+except Exception:
+    pass
+
+block_cipher = None
 
 a = Analysis(
     ['app.py'],
@@ -28,21 +51,20 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assembly=False,
+    cipher=block_cipher,
     noarchive=False,
-    optimize=0,
 )
 
-# Filter out all CUDA-related DLLs to force CPU execution
-a.binaries = [x for x in a.binaries if 'cuda' not in os.path.basename(x[0])]
-
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
+    a.zipfiles,
     a.datas,
-    [],
     name='ocr_server',
     debug=False,
     bootloader_ignore_signals=False,
