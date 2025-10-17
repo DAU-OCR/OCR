@@ -3,6 +3,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import re
 import io
+import json
 import cv2
 import torch
 import easyocr
@@ -54,6 +55,7 @@ os.makedirs(WARPED_FOLDER, exist_ok=True)
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['JSON_AS_ASCII'] = False
 
 @app.after_request
 def cors(response):
@@ -632,44 +634,66 @@ def download_json():
 
     output_data = []
     for r in data:
-        selected_conf = 0
+        r_plate = r.get('plate', '인식 실패')
+        r_matched = r.get('matched', False)
+        reason = r.get('reason', '')
+        conf1, conf2, conf3 = r.get('conf1', 0), r.get('conf2', 0), r.get('conf3', 0)
+        text1, text2, text3 = r.get('text1', ''), r.get('text2', ''), r.get('text3', '')
+
         accuracy = "N/A"
-        
-        reason_text = r.get('reason', '')
-        model_match = re.search(r'\((.*?)\)', reason_text)
-        selected_model_name = model_match.group(1) if model_match else ''
-
-        if selected_model_name == '모델1':
-            selected_conf = r.get('conf1', 0)
-        elif selected_model_name == '모델2':
-            selected_conf = r.get('conf2', 0)
-        elif selected_model_name == '모델3(CRNN)':
-            selected_conf = r.get('conf3', 0)
-
-        if '패치' in reason_text:
-            accuracy = "N/A (Patched)"
-        elif selected_conf > 0:
-            accuracy = f"{selected_conf * 100:.2f}"
-        
         error_message = ""
-        if not r.get('matched') or r.get('plate') == '인식 실패':
-            error_message = reason_text or '인식 실패'
+        
+        if r_matched and r_plate != '인식 실패':
+            # Success case
+            error_message = ""
+            selected_conf = 0
+            
+            if reason == '모델1우선' or reason == '패치':
+                accuracy = "N/A"
+            else:
+                if '모델1' in reason:
+                    selected_conf = conf1
+                elif '모델2' in reason:
+                    selected_conf = conf2
+                elif '모델3(CRNN)' in reason:
+                    selected_conf = conf3
+                elif '다수결' in reason:
+                    if r_plate == text1: selected_conf = conf1
+                    elif r_plate == text2: selected_conf = conf2
+                    elif r_plate == text3: selected_conf = conf3
+                
+                if selected_conf > 0:
+                    accuracy = f"{selected_conf * 100:.2f}"
+                else:
+                    accuracy = "N/A"
+        else:
+            # Failure case
+            accuracy = "N/A"
+            error_message = reason or '인식 실패'
 
         json_record = {
             '파일명': os.path.basename(r.get('image', '')),
             '처리일시': r.get('timestamp'),
             '모델별 결과': [
-                {'모델명': '모델1 (EasyOCR-ko)', '결과': r.get('text1', ''), '신뢰도': r.get('conf1', 0)},
-                {'모델명': '모델2 (EasyOCR-en)', '결과': r.get('text2', ''), '신뢰도': r.get('conf2', 0)},
-                {'모델명': '모델3 (CRNN)', '결과': r.get('text3', ''), '신뢰도': r.get('conf3', 0)},
+                {'모델명': '모델1 (EasyOCR-ko)', '결과': text1, '신뢰도': conf1},
+                {'모델명': '모델2 (EasyOCR-en)', '결과': text2, '신뢰도': conf2},
+                {'모델명': '모델3 (CRNN)', '결과': text3, '신뢰도': conf3},
             ],
-            '최종선택결과': r.get('plate'),
+            '최종선택결과': r_plate,
             '정확도(%)': accuracy,
             '오류메시지': error_message
         }
         output_data.append(json_record)
 
-    response = jsonify(output_data)
+    # Use json.dumps for correct Unicode handling
+    json_string = json.dumps(output_data, ensure_ascii=False, indent=4)
+    
+    response = app.response_class(
+        response=json_string,
+        status=200,
+        mimetype='application/json; charset=utf-8'
+    )
+
     today = datetime.now().strftime('%Y-%m-%d')
     filename = f"ocr_results_{today}.json"
     response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'

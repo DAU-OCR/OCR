@@ -1,3 +1,9 @@
 *.JPEG
 *.png
 *.txt
+
+# OCR
+ocr-web/release/**
+server/build/**
+server/dist/**
+server/uploads/**
