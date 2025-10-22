@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu, MenuItem } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, exec, execSync } = require('child_process');
+const fs = require('fs');
 
 let pythonProcess = null;
 
@@ -17,60 +18,88 @@ function getBackendPath() {
 // Function to start the Python backend
 function startPythonBackend() {
   const serverExecutable = getBackendPath();
-
-  console.log(`Attempting to start backend from: ${serverExecutable}`);
+  const serverDir = path.dirname(serverExecutable);
 
   pythonProcess = spawn(serverExecutable, [], {
-    stdio: 'inherit', // Pipe stdout/stderr to the main Electron process console for debugging
-    windowsHide: true
+    windowsHide: true,
+    cwd: serverDir
+    // stdio: 'ignore' // Remove this to capture output
   });
 
-  pythonProcess.on('error', (err) => {
-    console.error('Failed to start Python backend:', err);
+  pythonProcess.stdout.on('data', (data) => {
+    console.log(`Python stdout: ${data}`);
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python stderr: ${data}`);
   });
 
   pythonProcess.on('close', (code) => {
-    console.log(`Python backend exited with code ${code}`);
+    console.log(`Python process exited with code ${code}`);
   });
 }
 
-function createWindow() {
-  const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-    }
+  function createWindow() {
+    const mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+      }
+    });
+
+    // 개발자 도구 메뉴 추가
+    const menu = Menu.buildFromTemplate([
+      {
+        label: '개발자',
+        submenu: [
+          {
+            label: '개발자 도구 토글',
+            accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+            click (item, focusedWindow) {
+              if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+            }
+          }
+        ]
+      }
+    ]);
+    Menu.setApplicationMenu(menu);
+
+    // Load the React app.
+    const startUrl = app.isPackaged
+      ? `file://${path.join(__dirname, 'dist/index.html')}`
+      // In development, load from Vite dev server
+      : 'http://localhost:5173';
+    
+    mainWindow.loadURL(startUrl);
+  }
+  app.whenReady().then(() => {
+    startPythonBackend();
+    createWindow();
+
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
   });
 
-  // Load the React app.
-  const startUrl = app.isPackaged
-    ? `file://${path.join(__dirname, 'dist/index.html')}`
-    // In development, load from Vite dev server
-    : 'http://localhost:5173';
-  
-  mainWindow.loadURL(startUrl);
-}
-
-app.whenReady().then(() => {
-  startPythonBackend();
-  createWindow();
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit();
   });
-});
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-// Make sure to kill the backend process when the app quits.
+  // Make sure to kill the backend process when the app quits.
 app.on('will-quit', () => {
   if (pythonProcess) {
-    console.log('Killing Python backend...');
-    pythonProcess.kill();
+    // Windows에서 강제 종료를 위해 taskkill 사용
+    if (process.platform === 'win32') {
+      try {
+        execSync(`taskkill /pid ${pythonProcess.pid} /f /t`);
+      } catch (err) {
+        // Ignore errors, we are quitting anyway
+      }
+    } else {
+      pythonProcess.kill();
+    }
     pythonProcess = null;
   }
 });
