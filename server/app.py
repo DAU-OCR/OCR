@@ -1,9 +1,10 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
-import re
-import io
 import json
+import re
+import zipfile
+import io
 import cv2
 import torch
 import easyocr
@@ -55,6 +56,8 @@ os.makedirs(WARPED_FOLDER, exist_ok=True)
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ✅ [추가] JSON 응답 시 한글 유니코드 이스케이프를 비활성화 (가장 중요)
 app.config['JSON_AS_ASCII'] = False
 
 @app.after_request
@@ -277,12 +280,12 @@ def get_plate_corners_threshold(image, fname=None, save_debug=False, debug_dir=N
 def order_corners(pts):
     rect = np.zeros((4, 2), dtype="float32")
     s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]  # top-left
-    rect[2] = pts[np.argmax(s)]  # bottom-right
+    rect[0] = pts[np.argmin(s)] # top-left
+    rect[2] = pts[np.argmax(s)] # bottom-right
 
     diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]  # top-right
-    rect[3] = pts[np.argmax(diff)]  # bottom-left
+    rect[1] = pts[np.argmin(diff)] # top-right
+    rect[3] = pts[np.argmax(diff)] # bottom-left
     return rect
 
 def warp_perspective(image, corners, output_size=(200, 60)):
@@ -298,10 +301,10 @@ def warp_perspective(image, corners, output_size=(200, 60)):
 
 # 모델 로딩
 yolo_model = torch.hub.load(os.path.join(BASE_DIR, 'yolov5'), 'custom',
-                            path=resource_path(os.path.join('custom_weights', 'best.pt')),
-                            source='local',
-                            device='cpu', # 이 부분을 추가합니다.
-                            verbose=False)
+                             path=resource_path(os.path.join('custom_weights', 'best.pt')),
+                             source='local',
+                             device='cpu', # 이 부분을 추가합니다.
+                             verbose=False)
 
 model_path = resource_path('custom_weights_easyOCR')
 reader1 = easyocr.Reader(['ko'], gpu=False,
@@ -325,7 +328,7 @@ from label_encoder import LabelEncoder
 
 label_encoder = LabelEncoder()
 charset = label_encoder.get_charset()
-num_classes = len(charset) + 1  # CTC blank 토큰을 위해 +1
+num_classes = len(charset) + 1 # CTC blank 토큰을 위해 +1
 
 crnn_model = load_crnn_model(crnn_model_path, num_classes=num_classes, device=device)
 # --- CRNN 모델 로딩 종료 ---
@@ -339,7 +342,7 @@ def detect_plate(image):
     # Preprocessing
     img0 = image.copy()
     img, ratio, (dw, dh) = letterbox(img0, 640, stride=32, auto=True)
-    img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+    img = img.transpose((2, 0, 1))[::-1] # HWC to CHW, BGR to RGB
     img = np.ascontiguousarray(img)
 
     img = torch.from_numpy(img).to(device)
@@ -349,7 +352,8 @@ def detect_plate(image):
         img = img[None]
 
     # Inference
-    pred = yolo_model(img, augment=False)
+    # pred = yolo_model(img, augment=False, visualize=False)    수정
+    pred = yolo_model(img, augment=False ) # visualize 옵션 제거
     if isinstance(pred, (list, tuple)) and len(pred) in (2, 3): # yolov5 returns a tuple (pred, feature_maps) or (pred, protos, feature_maps)
         pred = pred[0]
 
@@ -357,7 +361,7 @@ def detect_plate(image):
     pred = non_max_suppression(pred, 0.25, 0.45, classes=None, agnostic=False, max_det=1000)
 
     detections = []
-    for i, det in enumerate(pred):  # per image
+    for i, det in enumerate(pred): # per image
         if len(det):
             # Rescale boxes from img_size to im0 size
             det[:, :4] = scale_boxes(img.shape[2:], det[:, :4], img0.shape).round()
@@ -380,116 +384,166 @@ def detect_plate(image):
     _, (x1, y1, x2, y2) = max(filtered)
     return image[y1:y2, x1:x2], (x1, y1, x2, y2)
 
+def process_file_and_record(f, fname, image):
+    """
+    OCR 처리 및 records에 결과 저장 로직을 담은 헬퍼 함수
+    /upload 와 /upload-batch 에서 재사용
+    """
+    try:
+        result = {
+            'image': f'/uploads/{fname}',
+            'timestamp': datetime.now().isoformat(),
+            'matched': False
+        }
 
+        # 디버그 폴더 생성
+        debug_subdir = os.path.join(UPLOAD_FOLDER, 'debug', os.path.splitext(fname)[0])
+        os.makedirs(debug_subdir, exist_ok=True)
+
+        detected = detect_plate(image)
+        if not detected:
+            records.append(result)
+            return
+
+        plate_img, (x1, y1, x2, y2) = detected
+
+        # 디버그: YOLO 검출 영역 저장
+        cv2.imwrite(os.path.join(debug_subdir, '1_detected_yolo.png'), plate_img)
+
+        # 패딩 추가
+        pad = 20
+        x1 = max(x1 - pad, 0)
+        y1 = max(y1 - pad, 0)
+        x2 = min(x2 + pad, image.shape[1])
+        y2 = min(y2 + pad, image.shape[0])
+        plate_img = image[y1:y2, x1:x2]
+
+        # 디버그: 패딩 후 이미지 저장
+        cv2.imwrite(os.path.join(debug_subdir, '2_padded.png'), plate_img)
+
+        # 디버그: 보정 전 이미지 저장
+        cv2.imwrite(os.path.join(debug_subdir, '3_before_correction.png'), plate_img)
+
+        # 보정 시도 1
+        corners = get_plate_corners(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
+        if corners is None:
+            corners = get_plate_corners_threshold(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
+
+
+        if corners is not None:
+            # 디버그: 검출된 코너 시각화
+            corner_img = plate_img.copy()
+            cv2.polylines(corner_img, [np.int32(corners)], True, (0, 255, 0), 2)
+            cv2.imwrite(os.path.join(debug_subdir, '4_detected_corners.png'), corner_img)
+
+            # 보정 수행
+            warped_img = warp_perspective(plate_img, corners)
+
+            # 디버그: 보정된 결과 이미지 저장
+            cv2.imwrite(os.path.join(debug_subdir, '5_corrected_warped.png'), warped_img)
+
+            # 보정된 이미지로 교체
+            plate_img = warped_img
+
+        # OCR 리사이즈 후 입력 저장
+        t1_input = cv2.resize(plate_img, resize1)
+        t2_input = cv2.resize(plate_img, resize2)
+        cv2.imwrite(os.path.join(debug_subdir, '6_ocr_model1_input.png'), t1_input)
+        cv2.imwrite(os.path.join(debug_subdir, '7_ocr_model2_input.png'), t2_input)
+
+        # OCR 수행
+        t1, c1 = get_filtered_ocr(reader1, plate_img, resize1)
+        t2, c2 = get_filtered_ocr(reader2, plate_img, resize2)
+        t3, c3 = run_crnn_ocr(plate_img, crnn_model, label_encoder, device)
+        c3 = round(c3, 2)
+
+        selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, VALID_HANGUL_CHARS)
+        matched = is_valid_plate(selected)
+
+        if not matched:
+            selected = '인식 실패'
+
+        crop_name = f"crop_{fname}"
+        vis_name = f"vis_{fname}"
+        cv2.imwrite(os.path.join(CROP_FOLDER, crop_name), plate_img)
+        PILImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)).save(os.path.join(VISUAL_FOLDER, vis_name))
+
+        # 개발자용 디버깅 이미지 저장: YOLO 박스 포함된 원본 이미지
+        DEV_VISUAL_FOLDER = os.path.join(UPLOAD_FOLDER, 'dev_visual')
+        os.makedirs(DEV_VISUAL_FOLDER, exist_ok=True)
+        dev_vis_path = os.path.join(DEV_VISUAL_FOLDER, f'dev_{fname}')
+        dev_img = image.copy()
+        cv2.rectangle(dev_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        PILImage.fromarray(cv2.cvtColor(dev_img, cv2.COLOR_BGR2RGB)).save(dev_vis_path)
+
+        result.update({
+            'crop': f'/uploads/cropped/{crop_name}',
+            'visual': f'/uploads/visual/{vis_name}',
+            'text1': t1, 'conf1': c1,
+            'text2': t2, 'conf2': c2,
+            'text3': t3, 'conf3': c3,
+            'plate': selected, 'reason': reason,
+            'matched': matched
+        })
+        records.append(result)
+
+    except Exception as e:
+        print(f"Error processing file {fname}: {e}")
+        traceback.print_exc()
+        # 오류 발생 시 실패 결과만 기록하고 계속 진행
+        records.append({
+            'image': f'/uploads/{fname}',
+            'timestamp': datetime.now().isoformat(),
+            'matched': False,
+            'plate': '처리 오류',
+            'reason': f'Internal Error: {str(e)}'
+        })
+
+
+# =========================================================================
+# 1. 기존 웹 UI 업로드 엔드포인트 유지
+# =========================================================================
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
+        # 기존 웹 UI와 호환되는 'images' 또는 'image' 필드를 사용
         files = request.files.getlist('images') or request.files.getlist('image')
         if not files:
             return jsonify({'error': '파일이 없습니다'}), 400
 
+        total_processed_from_zip = 0
+        total_images_in_zip = 0
         for f in files:
             fname = secure_filename(f.filename)
-            path = os.path.join(UPLOAD_FOLDER, fname)
-            f.save(path)
-            image = cv2.imread(path)
-            result = {
-                'image': f'/uploads/{fname}',
-                'timestamp': datetime.now().isoformat(),
-                'matched': False
-            }
+            if fname.lower().endswith('.zip'):
+                zip_buffer = io.BytesIO(f.read())
+                with zipfile.ZipFile(zip_buffer, 'r') as zip_ref:
+                    # Count actual image files in zip for total_images_in_zip
+                    zip_image_files = [zi for zi in zip_ref.infolist() if not zi.is_dir() and zi.filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
+                    total_images_in_zip = len(zip_image_files)
 
-            # 디버그 폴더 생성
-            debug_subdir = os.path.join(UPLOAD_FOLDER, 'debug', os.path.splitext(fname)[0])
-            os.makedirs(debug_subdir, exist_ok=True)
+                    for zip_info in zip_image_files:
+                        image_data = zip_ref.read(zip_info.filename)
+                        image_np = np.frombuffer(image_data, np.uint8)
+                        image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+                        
+                        unique_zip_fname = secure_filename(zip_info.filename.replace(os.sep, '_').replace('/', '_'))
+                        
+                        path = os.path.join(UPLOAD_FOLDER, unique_zip_fname)
+                        with open(path, 'wb') as img_file:
+                            img_file.write(image_data)
 
-            detected = detect_plate(image)
-            if not detected:
-                records.append(result)
-                continue
-
-            plate_img, (x1, y1, x2, y2) = detected
-
-            # 디버그: YOLO 검출 영역 저장
-            cv2.imwrite(os.path.join(debug_subdir, '1_detected_yolo.png'), plate_img)
-
-            # 패딩 추가
-            pad = 20
-            x1 = max(x1 - pad, 0)
-            y1 = max(y1 - pad, 0)
-            x2 = min(x2 + pad, image.shape[1])
-            y2 = min(y2 + pad, image.shape[0])
-            plate_img = image[y1:y2, x1:x2]
-
-            # 디버그: 패딩 후 이미지 저장
-            cv2.imwrite(os.path.join(debug_subdir, '2_padded.png'), plate_img)
-
-            # 디버그: 보정 전 이미지 저장
-            cv2.imwrite(os.path.join(debug_subdir, '3_before_correction.png'), plate_img)
-
-            # 보정 시도 1
-            # corners 추출 시 디버그 인자 추가
-            corners = get_plate_corners(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
-            if corners is None:
-                corners = get_plate_corners_threshold(plate_img, fname=os.path.splitext(fname)[0], save_debug=True, debug_dir=debug_subdir)
-
-
-            if corners is not None:
-                # 디버그: 검출된 코너 시각화
-                corner_img = plate_img.copy()
-                cv2.polylines(corner_img, [np.int32(corners)], True, (0, 255, 0), 2)
-                cv2.imwrite(os.path.join(debug_subdir, '4_detected_corners.png'), corner_img)
-
-                # 보정 수행
-                warped_img = warp_perspective(plate_img, corners)
-
-                # 디버그: 보정된 결과 이미지 저장
-                cv2.imwrite(os.path.join(debug_subdir, '5_corrected_warped.png'), warped_img)
-
-                # 보정된 이미지로 교체
-                plate_img = warped_img
-
-            # OCR 리사이즈 후 입력 저장
-            t1_input = cv2.resize(plate_img, resize1)
-            t2_input = cv2.resize(plate_img, resize2)
-            cv2.imwrite(os.path.join(debug_subdir, '6_ocr_model1_input.png'), t1_input)
-            cv2.imwrite(os.path.join(debug_subdir, '7_ocr_model2_input.png'), t2_input)
-
-            # OCR 수행
-            t1, c1 = get_filtered_ocr(reader1, plate_img, resize1)
-            t2, c2 = get_filtered_ocr(reader2, plate_img, resize2)
-            t3, c3 = run_crnn_ocr(plate_img, crnn_model, label_encoder, device)
-            c3 = round(c3, 2)
-
-            selected, reason = apply_plate_selection_logic(t1, c1, t2, c2, t3, c3, VALID_HANGUL_CHARS)
-            matched = is_valid_plate(selected)
-
-            if not matched:
-                selected = '인식 실패'
-
-            crop_name = f"crop_{fname}"
-            vis_name = f"vis_{fname}"
-            cv2.imwrite(os.path.join(CROP_FOLDER, crop_name), plate_img)
-            PILImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)).save(os.path.join(VISUAL_FOLDER, vis_name))
-
-            # 개발자용 디버깅 이미지 저장: YOLO 박스 포함된 원본 이미지
-            DEV_VISUAL_FOLDER = os.path.join(UPLOAD_FOLDER, 'dev_visual')
-            os.makedirs(DEV_VISUAL_FOLDER, exist_ok=True)
-            dev_vis_path = os.path.join(DEV_VISUAL_FOLDER, f'dev_{fname}')
-            dev_img = image.copy()
-            cv2.rectangle(dev_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            PILImage.fromarray(cv2.cvtColor(dev_img, cv2.COLOR_BGR2RGB)).save(dev_vis_path)
-
-            result.update({
-                'crop': f'/uploads/cropped/{crop_name}',
-                'visual': f'/uploads/visual/{vis_name}',
-                'text1': t1, 'conf1': c1,
-                'text2': t2, 'conf2': c2,
-                'text3': t3, 'conf3': c3,
-                'plate': selected, 'reason': reason,
-                'matched': matched
-            })
-            records.append(result)
+                        process_file_and_record(None, unique_zip_fname, image)
+                        total_processed_from_zip += 1
+                return jsonify({'status': 'ok', 'processed_count': total_processed_from_zip, 'total_images_in_zip': total_images_in_zip}), 200
+            else:
+                path = os.path.join(UPLOAD_FOLDER, fname)
+                f.seek(0)
+                f.save(path)
+                image = cv2.imread(path)
+                
+                process_file_and_record(f, fname, image)
+                return jsonify({'status': 'ok', 'processed_count': 1}), 200
 
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
@@ -497,9 +551,67 @@ def upload():
         return jsonify({'error': 'An internal error occurred', 'details': str(e)}), 500
 
 
+# =========================================================================
+# 2. BAT 파일용 일괄 업로드 엔드포인트 추가 (새로운 기능)
+# =========================================================================
+@app.route('/upload-batch', methods=['POST'])
+def upload_batch():
+    try:
+        # BAT 파일의 curl 명령 (-F "files=@...")과 일치하도록 'files' 필드를 사용
+        files = request.files.getlist('files')
+        if not files:
+            # BAT 파일의 오류 처리를 위해 400 Bad Request를 반환
+            return jsonify({'error': '업로드할 이미지 파일이 없습니다.'}), 400
+
+        processed_count = 0
+        for f in files:
+            fname = secure_filename(f.filename)
+            if fname.lower().endswith('.zip'):
+                zip_buffer = io.BytesIO(f.read())
+                with zipfile.ZipFile(zip_buffer, 'r') as zip_ref:
+                    for zip_info in zip_ref.infolist():
+                        if zip_info.is_dir() or not zip_info.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                            continue
+                        
+                        image_data = zip_ref.read(zip_info.filename)
+                        image_np = np.frombuffer(image_data, np.uint8)
+                        image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+                        
+                        # Ensure unique filename by replacing path separators with underscores
+                        unique_zip_fname = secure_filename(zip_info.filename.replace(os.sep, '_').replace('/', '_'))
+                        
+                        path = os.path.join(UPLOAD_FOLDER, unique_zip_fname)
+                        with open(path, 'wb') as img_file:
+                            img_file.write(image_data)
+
+                        process_file_and_record(None, unique_zip_fname, image)
+                        processed_count += 1
+            else:
+                path = os.path.join(UPLOAD_FOLDER, fname)
+                f.seek(0)
+                f.save(path)
+                image = cv2.imread(path)
+                
+                # OCR 및 기록 로직 재사용
+                process_file_and_record(f, fname, image)
+                processed_count += 1
+            
+        # BAT 파일이 다음 단계(다운로드)로 진행할 수 있도록 성공 응답 반환
+        return jsonify({'status': 'batch upload ok', 'count': processed_count}), 200
+
+    except Exception as e:
+        print(f"Batch Upload Error: {e}")
+        traceback.print_exc()
+        # 오류 발생 시 500 에러를 반환하여 BAT 파일이 인식하도록 함
+        return jsonify({'error': 'An internal error occurred during batch processing', 'details': str(e)}), 500
+
+
+# =========================================================================
+# 3. 나머지 엔드포인트는 그대로 유지
+# =========================================================================
 @app.route('/download', methods=['GET'])
 def download_excel():
-    # 전체 records를 대상으로 함
+    # ... (기존 코드 유지) ...
     data = records.copy()
 
     if not data:
@@ -595,7 +707,7 @@ def download_excel():
     today = datetime.now().strftime('%Y-%m-%d')
     fname = secure_filename(request.args.get('filename') or f"{today}_plates") + '.xlsx'
     return send_file(buf, as_attachment=True, download_name=fname,
-                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 @app.route('/results')
@@ -604,7 +716,7 @@ def results():
 
 @app.route('/update-plates', methods=['POST'])
 def update_plates():
-    updates = request.json  # 리스트 받기
+    updates = request.json # 리스트 받기
     count = 0
     for u in updates:
         for r in records:
@@ -634,72 +746,77 @@ def download_json():
 
     output_data = []
     for r in data:
-        r_plate = r.get('plate', '인식 실패')
-        r_matched = r.get('matched', False)
-        reason = r.get('reason', '')
-        conf1, conf2, conf3 = r.get('conf1', 0), r.get('conf2', 0), r.get('conf3', 0)
-        text1, text2, text3 = r.get('text1', ''), r.get('text2', ''), r.get('text3', '')
-
+        selected_conf = 0
         accuracy = "N/A"
-        error_message = ""
         
-        if r_matched and r_plate != '인식 실패':
-            # Success case
-            error_message = ""
-            selected_conf = 0
-            
-            if reason == '모델1우선' or reason == '패치':
-                accuracy = "N/A"
-            else:
-                if '모델1' in reason:
-                    selected_conf = conf1
-                elif '모델2' in reason:
-                    selected_conf = conf2
-                elif '모델3(CRNN)' in reason:
-                    selected_conf = conf3
-                elif '다수결' in reason:
-                    if r_plate == text1: selected_conf = conf1
-                    elif r_plate == text2: selected_conf = conf2
-                    elif r_plate == text3: selected_conf = conf3
-                
-                if selected_conf > 0:
-                    accuracy = f"{selected_conf * 100:.2f}"
-                else:
-                    accuracy = "N/A"
-        else:
-            # Failure case
-            accuracy = "N/A"
-            error_message = reason or '인식 실패'
+        reason_text = r.get('reason', '')
+        model_match = re.search(r'\((.*?)\)', reason_text)
+        selected_model_name = model_match.group(1) if model_match else ''
+
+        if selected_model_name == '모델1':
+            selected_conf = r.get('conf1', 0)
+        elif selected_model_name == '모델2':
+            selected_conf = r.get('conf2', 0)
+        elif selected_model_name == '모델3(CRNN)':
+            selected_conf = r.get('conf3', 0)
+
+        if '패치' in reason_text:
+            accuracy = "N/A (Patched)"
+        elif selected_conf > 0:
+            accuracy = f"{selected_conf * 100:.2f}"
+        
+        error_message = ""
+        if not r.get('matched') or r.get('plate') == '인식 실패':
+            error_message = reason_text or '인식 실패'
 
         json_record = {
             '파일명': os.path.basename(r.get('image', '')),
             '처리일시': r.get('timestamp'),
             '모델별 결과': [
-                {'모델명': '모델1 (EasyOCR-ko)', '결과': text1, '신뢰도': conf1},
-                {'모델명': '모델2 (EasyOCR-en)', '결과': text2, '신뢰도': conf2},
-                {'모델명': '모델3 (CRNN)', '결과': text3, '신뢰도': conf3},
+                {'모델명': '모델1 (EasyOCR-ko)', '결과': r.get('text1', ''), '신뢰도': r.get('conf1', 0)},
+                {'모델명': '모델2 (EasyOCR-en)', '결과': r.get('text2', ''), '신뢰도': r.get('conf2', 0)},
+                {'모델명': '모델3 (CRNN)', '결과': r.get('text3', ''), '신뢰도': r.get('conf3', 0)},
             ],
-            '최종선택결과': r_plate,
+            '최종선택결과': r.get('plate'),
             '정확도(%)': accuracy,
             '오류메시지': error_message
         }
         output_data.append(json_record)
 
-    # Use json.dumps for correct Unicode handling
     json_string = json.dumps(output_data, ensure_ascii=False, indent=4)
     
-    response = app.response_class(
-        response=json_string,
-        status=200,
-        mimetype='application/json; charset=utf-8'
-    )
-
     today = datetime.now().strftime('%Y-%m-%d')
     filename = f"ocr_results_{today}.json"
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    response = send_file(
+        io.BytesIO(json_string.encode('utf-8')),
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/json'
+    )
+    print(f"[DEBUG] Content-Disposition header: {response.headers.get('Content-Disposition')}")
     return response
+
+@app.route('/get-zip-image-count', methods=['POST'])
+def get_zip_image_count():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if file and file.filename.lower().endswith('.zip'):
+        zip_buffer = io.BytesIO(file.read())
+        try:
+            with zipfile.ZipFile(zip_buffer, 'r') as zip_ref:
+                image_count = 0
+                for zip_info in zip_ref.infolist():
+                    if not zip_info.is_dir() and zip_info.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                        image_count += 1
+                return jsonify({'image_count': image_count}), 200
+        except zipfile.BadZipFile:
+            return jsonify({'error': 'Bad zip file'}), 400
+    return jsonify({'error': 'Not a zip file'}), 400
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
-

@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 100px;
+  padding-top: 50px; /* Reduced from 100px */
   min-height: 100vh;
   position: relative;
 }
@@ -17,6 +17,21 @@
     0 12px 24px rgba(0,0,0,0.08),
     0 16px 32px rgba(0,0,0,0.06);
   text-align: center;
+}
+
+/* ✅ 드래그 앤 드롭 영역 스타일 */
+.dropzone {
+  border: 2px solid #eee; /* Changed to solid light gray by default */
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.dropzone.dragging {
+  border-color: #007bff; /* Blue dashed border when dragging */
+  border-style: dashed;
+  background-color: #e6f7ff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
 }
 
 .upload-icon {
