@@ -66,6 +66,22 @@ export default function ResultsPage() {
     };
   }, [selectedRow, rows]);
 
+  // Escape 키로 팝업 닫기
+  React.useEffect(() => {
+    if (!selectedRow) return;
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedRow(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [selectedRow]);
+
   useEffect(() => {
     axios.get('http://localhost:5000/results')
       .then(res => {
@@ -266,7 +282,7 @@ export default function ResultsPage() {
                       <input
                         ref={el => (inputRefs.current[i] = el)}
                         type="text"
-                        className="plate-input"
+                        className={`plate-input ${r.plate === '인식 실패' ? 'failure-plate-input' : ''}`}
                         value={r.plate} // '인식 실패'일 때 '인식 실패' 표시, 사용자 입력 유지
                         onChange={e => handlePlateChange(i, e.target.value)}
                         onKeyDown={e => {
@@ -326,7 +342,7 @@ export default function ResultsPage() {
                   <span className="result-label">최종 결과:</span>
                   <input
                     type="text"
-                    className="popup-plate-input"
+                    className={`popup-plate-input ${selectedRow.plate === '인식 실패' ? 'failure-plate-input' : ''}`}
                     value={selectedRow.plate} // '인식 실패'일 때 '인식 실패' 표시, 사용자 입력 유지
                     onChange={e => handlePopupPlateChange(e.target.value)}
                   />

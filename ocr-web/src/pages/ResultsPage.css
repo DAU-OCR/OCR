@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 100px;
+  padding-top: 50px; /* Reduced from 100px */
   background: none;
   width: 100%;
   box-sizing: border-box;
@@ -139,7 +139,7 @@
   padding: 24px;
   border-radius: 8px;
   max-width: 95vw; /* 팝업의 최대 너비를 95vw로 확장 */
-  max-height: 95vh; /* 팝업의 최대 높이를 95vh로 확장 */
+  max-height: 95vh; /* 팝업의 최대 높이를 85vh로 확장 */
   overflow: auto;
   box-shadow: 0 0 16px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease-out;
@@ -235,6 +235,17 @@
   border-radius: 4px;
   text-align: center;
   box-sizing: border-box;
+}
+
+/* Styling for '인식 실패' input fields */
+.failure-plate-input {
+  background-color: #dc3545; /* Red background */
+  color: #fff; /* White text */
+  border: 1px solid #dc3545;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 4px;
+  padding: 6px 8px;
 }
 
 .results-table tr.focused-row {
