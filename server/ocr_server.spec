@@ -19,7 +19,7 @@ for pkg in pkgs:
         pass  # package may not be installed; skip
 
 # If you have local resource folders, include them here (existence optional).
-for p in ['custom_weights', 'custom_weights_easyOCR', 'CRNN_model', 'yolov5']:
+for p in ['custom_weights_easyOCR', 'CRNN_model', 'yolov5']:
     if os.path.exists(p):
         datas.append((p, p))
 

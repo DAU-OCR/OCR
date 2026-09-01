@@ -46,10 +46,6 @@
         "to": "."
       },
       {
-        "from": "../server/custom_weights",
-        "to": "custom_weights"
-      },
-      {
         "from": "../server/custom_weights_easyOCR",
         "to": "custom_weights_easyOCR"
       },

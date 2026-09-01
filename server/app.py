@@ -301,7 +301,7 @@ def warp_perspective(image, corners, output_size=(200, 60)):
 
 # 모델 로딩
 yolo_model = torch.hub.load(os.path.join(BASE_DIR, 'yolov5'), 'custom',
-                             path=resource_path(os.path.join('custom_weights', 'best.pt')),
+                             path=resource_path(os.path.join('custom_weights_easyOCR', 'best.pt')),
                              source='local',
                              device='cpu', # 이 부분을 추가합니다.
                              verbose=False)
