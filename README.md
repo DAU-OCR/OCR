@@ -85,6 +85,15 @@
 
 ---
 
+## 참고 자료 (References)
+* Easy Korean License Plate Detector
+* AIHub 자동차 번호판 데이터셋
+* [EasyOCR GitHub](https://github.com/JaidedAI/EasyOCR)
+* [YOLOv5 GitHub](https://github.com/ultralytics/yolov5)
+* ClovaOCR
+
+---
+
 ## 팀원 정보 (Team)
 * **김수윤 (팀장)**: 백엔드 개발 및 학습 진행, 일정 조율
 * **김륜영**: 풀스택 개발 및 학습 진행, 문서 정리
@@ -95,3 +104,8 @@
 ---
 **지도교수**: 김현석 교수님  
 **협업기관**: 부산광역시 사하구청
+
+---
+
+## 라이선스 (License)
+본 프로젝트는 [MIT License](./LICENSE) 하에 배포됩니다.
