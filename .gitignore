@@ -7,3 +7,7 @@ ocr-web/release/**
 server/build/**
 server/dist/**
 server/uploads/**
+
+# Python
+__pycache__/
+*.pyc
