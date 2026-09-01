@@ -2,6 +2,9 @@
 *.png
 *.txt
 
+# README에서 쓰는 문서용 이미지는 위 *.png 규칙에서 예외 처리
+!readmeImage/*.png
+
 # OCR
 ocr-web/release/**
 server/build/**
